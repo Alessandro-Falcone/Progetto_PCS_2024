@@ -17,7 +17,7 @@ int main(){
 
     DFN Fract;
 
-    string fileFR = "DFN/FR10_data.txt";
+    string fileFR = "DFN/FR3_data.txt";
     string fileOutputPuntiDiIntersezione = "./puntiDiIntersezione.txt";
     string fileOutputLunghezzaTracce = "./lunghezzaTracce.txt";
 
