@@ -18,7 +18,7 @@ int main(){
     // prima parte progetto
     DFN Fract;
 
-    string percorsoFileFR = "DFN/FR10_data.txt";
+    string percorsoFileFR = "DFN/FR3_data.txt";
     string percorsoFileOutputPuntiDiIntersezione = "./puntiDiIntersezione.txt";
     string percorsoFileOutputLunghezzaTracce = "./lunghezzaTracce.txt";
     string fileVTK = "./intersezioniTracce.vtk";
@@ -57,15 +57,25 @@ int main(){
     cout << "numero delle tracce: " << numeroTracceTotali << endl;
     if(!stampaDatiSuiFileDiOutput(percorsoFileOutputPuntiDiIntersezione, percorsoFileOutputLunghezzaTracce, Fract, numeroTracceTotali)){
         cerr << "Errore: impossibile stampare sui file di output" << endl;
-        return -1;
+        return 1;
     }
 
     if(!stampaDatiSulFileVTKDiParaview(fileVTK, Fract)){
         cerr << "Errore: impossibile stampare sul file da esportare su paraview" << endl;
-        return -1;
+        return 1;
     }else{
         cout << "il file VTK e' stato scritto con successo" << endl;
     }
+
+    // cout << endl;
+    // cout << "coordinate punto P: " << Fract.coordinatePuntoP[make_pair(0,1)][0] << endl;
+    // cout << "coordinate punto P: " << Fract.coordinatePuntoP[make_pair(0,1)][1] << endl;
+    // cout << "coordinate punto P: " << Fract.coordinatePuntoP[make_pair(0,1)][2] << endl;
+
+    // cout << endl;
+    // cout << "coordinate intersezioni: " << Fract.coordinateIntersezioniTracce[make_pair(0,1)][0] << endl;
+    // cout << "coordinate intersezioni: " << Fract.coordinateIntersezioniTracce[make_pair(0,1)][1] << endl;
+    // cout << "coordinate intersezioni: " << Fract.coordinateIntersezioniTracce[make_pair(0,1)][2] << endl;
 
     // secondo parte progetto
     PolygonalMesh mesh;

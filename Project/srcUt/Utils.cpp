@@ -190,6 +190,7 @@ bool calcoloEqPianoEdEqRetteLati(DFN& Fract){
         double termineNoto = dPiano;
         Fract.coeffabcPiano[frattura.first] = abcPiano;
         Fract.coeffdPiano[frattura.first] = termineNoto;
+        cout << "id: " << frattura.first << " termini noti piano: " << termineNoto << endl;
 
         // calcolo rette dei lati
         // conto le righe e le colonne di tale matrice, ovvero quanti vertici ha e le coordinate associate a questi vertici
@@ -216,6 +217,8 @@ bool calcoloEqPianoEdEqRetteLati(DFN& Fract){
 
         // inserisce in una mappa i coefficienti direttori delle rette dei lati della frattura considerata
         Fract.coeffDirettoriRettaLati[frattura.first] = coeffDirettoriRettaLati;
+        cout << "id: " << frattura.first << " coeff Direttori Lati:" << endl;
+        cout << coeffDirettoriRettaLati << endl;
     }
     return true;
     }
@@ -239,7 +242,9 @@ bool calcoloIntersezionePiani(DFN &Fract, unsigned int &numIntersezioniFratture)
 
         // aggiunta vettori temporanei se no non mi fa fare il prodotto vettoriale
         Vector3d vett1 = Fract.coeffabcPiano[idFrattura1];
+        cout << "id: " << idFrattura1 << " coeff piano: " << vett1.transpose() << endl;
         Vector3d vett2 = Fract.coeffabcPiano[idFrattura2];
+        cout << "id: " << idFrattura2 << " coeff piano: " << vett2.transpose() << endl;
         coeffDirettoriRettaTraccia.row(k) = vett1.transpose().cross(vett2.transpose());
         coeffDirettoriRettaTraccia.row(k) = (coeffDirettoriRettaTraccia.row(k).array() == -0).select(0, coeffDirettoriRettaTraccia.row(k)); // può succedere che ho -0 allora lo sostituisco con 0 con questa riga di codice
 
@@ -262,8 +267,8 @@ bool calcoloIntersezionePiani(DFN &Fract, unsigned int &numIntersezioniFratture)
             Fract.coeffDirettoriRettaTraccia[make_pair(idFrattura1, idFrattura2)] = coeffDirettoriRettaTraccia.row(intersezioneP);
             intersezioneP++;
 
-            // cout << "traccia numero: " << k << fixed << scientific << setprecision(16) << " P: " << Fract.coordinatePuntoP[make_pair(idFrattura1, idFrattura2)].transpose() << endl;
-            // cout << " (" << coeffDirettoriRettaTraccia.row(k) << ") * t" << endl;
+            cout << "traccia numero: " << k << fixed << scientific << setprecision(16) << " P: " << Fract.coordinatePuntoP[make_pair(idFrattura1, idFrattura2)].transpose() << endl;
+            cout << " (" << coeffDirettoriRettaTraccia.row(k) << ") * t" << endl;
         }
         k++;
     }
@@ -514,6 +519,9 @@ bool calcoloIntersezioneRettaTracciaERettalati(DFN &Fract, unsigned int &numeroT
 
                 coordinateIntersezioniTraccia.row(0) = intersezione[posCoordCurvilinea[1]].transpose();
                 coordinateIntersezioniTraccia.row(1) = intersezione[posCoordCurvilinea[2]].transpose();
+
+                cout << "coordinate intersezioni: " << endl;
+                cout << coordinateIntersezioniTraccia << endl;
                 bool tracciaPassante1 = false;
                 bool tracciaPassante2 = false;
                 double lunghezzaTraccia = (intersezione[posCoordCurvilinea[2]].transpose() - intersezione[posCoordCurvilinea[1]].transpose()).squaredNorm();

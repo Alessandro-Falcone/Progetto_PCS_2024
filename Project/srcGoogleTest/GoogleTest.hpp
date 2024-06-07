@@ -152,6 +152,62 @@ TEST(TestFunzioneCalcoloIntersezionePiani, RestituisceTrue){
     ASSERT_GE(Fract.coordinatePuntoP.size(), 0); // verifico che la mappa non sia vuota
     ASSERT_GE(Fract.coeffDirettoriRettaTraccia.size(), 0); // verifico che la mappa non sia vuota
 }
+// traccia numero: 0 P: 8.0000000000000016e-01 0.0000000000000000e+00 0.0000000000000000e+00
+//     ( 0.0000000000000000e+00 -4.0000000000000002e-01  0.0000000000000000e+00) * t
+
+TEST(TestFunzioneCalcoloIntersezionePiani, BasicTestCoordinatePuntoP){
+    // DFN Fract;
+    double tol = 1e-6;
+    unsigned int numIntersezioniFratture = 1;
+    Vector3d vett1 = Vector3d::Zero();
+    vett1 << 0, 0, 1;
+    Vector3d vett2 = Vector3d::Zero();
+    vett2 << -0.4, 0, 0;
+
+    Fract.coeffabcPiano[0] = vett1;
+    Fract.coeffabcPiano[1] = vett2;
+
+    Fract.idFrattureCheSiIntersecano[0] = make_pair(0,1);
+    Vector3d expectedcoordinatePuntoP(0.8, 0, 0);
+
+    // Chiamata alla funzione
+    bool result = calcoloIntersezionePiani(Fract, numIntersezioniFratture);
+
+    // Verifica del risultato
+    ASSERT_TRUE(result);
+
+    EXPECT_NEAR(Fract.coordinatePuntoP[make_pair(0,1)][0] , expectedcoordinatePuntoP(0), tol);
+    EXPECT_NEAR(Fract.coordinatePuntoP[make_pair(0,1)][1] , expectedcoordinatePuntoP(1), tol);
+    EXPECT_NEAR(Fract.coordinatePuntoP[make_pair(0,1)][2] , expectedcoordinatePuntoP(2), tol);
+
+}
+
+TEST(TestFunzioneCalcoloIntersezionePiani, BasicTestCoefficientiDirettoriRettaTraccia){
+    double tol = 1e-6;
+    unsigned int numIntersezioniFratture = 1;
+    Vector3d vett1 = Vector3d::Zero();
+    vett1 << 0, 0, 1;
+    Vector3d vett2 = Vector3d::Zero();
+    vett2 << -0.4, 0, 0;
+
+    Fract.coeffabcPiano[0] = vett1;
+    Fract.coeffabcPiano[1] = vett2;
+    Fract.coeffdPiano[0] = 0;
+    Fract.coeffdPiano[1] = 0.32;
+
+    Fract.idFrattureCheSiIntersecano[0] = make_pair(0,1);
+    Vector3d expectedcoefficientiDirettoriRettaTraccia(0, -0.4, 0);
+
+    // Chiamata alla funzione
+    bool result = calcoloIntersezionePiani(Fract, numIntersezioniFratture);
+
+    // Verifica del risultato
+    ASSERT_TRUE(result);
+
+    EXPECT_NEAR(Fract.coeffDirettoriRettaTraccia[make_pair(0,1)][0] , expectedcoefficientiDirettoriRettaTraccia(0), tol);
+    EXPECT_NEAR(Fract.coeffDirettoriRettaTraccia[make_pair(0,1)][1] , expectedcoefficientiDirettoriRettaTraccia(1), tol);
+    EXPECT_NEAR(Fract.coeffDirettoriRettaTraccia[make_pair(0,1)][2] , expectedcoefficientiDirettoriRettaTraccia(2), tol);
+}
 
 // Test per la funzione calcoloIntersezioneRettaTracciaERettalati
 TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, RestituisceTrue){
@@ -164,7 +220,126 @@ TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, RestituisceTrue){
     ASSERT_GE(Fract.lunghezzaTracce.size(), 0); // verifico che la mappa non sia vuota
 }
 
+TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, CoordinatePuntiTraccia){
+
+    double tol = 1e-6;
+    unsigned int numeroTracceTotali = 1;
+
+    MatrixXd matrCoordinateFratture1(3, 4); // 3 righe per x, y, z; 4 colonne per i 4 vertici
+    matrCoordinateFratture1 << 0, 1, 1, 0,
+        0, 0, 1, 1,
+        0, 0, 0, 0;
+
+    // Assegna le coordinate della frattura all'id 0
+    Fract.coordinateFratture[0] = matrCoordinateFratture1;
+
+    MatrixXd matrCoordinateFratture2(3, 4); // 3 righe per x, y, z; 4 colonne per i 4 vertici
+    matrCoordinateFratture2 << 0.8, 0.8, 0.8, 0.8,
+                                0, 0, 1, 1,
+                            -0.1, 0.299999999, 0.299999999, -0.1;
+
+    // Assegna le coordinate della frattura all'id 0
+    Fract.coordinateFratture[1] = matrCoordinateFratture2;
+
+    Vector3d coordinateP(0.8, 0, 0);
+    Vector3d coeffDirRettaTraccia(0, -0.4, 0);
+
+
+    Fract.coordinatePuntoP[make_pair(0,1)] = coordinateP;
+    Fract.coeffDirettoriRettaTraccia[make_pair(0,1)] = coeffDirRettaTraccia;
+
+
+    MatrixXd matrLati1(4, 3); // 4 righe per x, y, z; 3 colonne per i 4 vertici
+    matrLati1 << 1, 0, 0,
+                0, 1, 0,
+                -1, 0, 0,
+                0, -1, 0;
+
+    MatrixXd matrLati2(4, 3); // 4 righe per x, y, z; 3 colonne per i 4 vertici
+    matrLati2 << 0, 0, 0.4,
+            0, 1, 0,
+            0, 0, -0.4,
+            0, -1, 0;
+
+    Fract.coeffDirettoriRettaLati[0] = matrLati1;
+    Fract.coeffDirettoriRettaLati[1] = matrLati2;
+
+    MatrixXd expectedmatrTraccia(2, 3);
+    expectedmatrTraccia << 0.8, 1, 0,
+                    0.8, 0, 0;
+    // Fract.coordinateIntersezioniTracce[make_pair(0,1)] = matrTraccia;
+
+    // Chiamata alla funzione
+    bool result = calcoloIntersezioneRettaTracciaERettalati(Fract, numeroTracceTotali);
+
+    // Verifica del risultato
+    ASSERT_TRUE(result);
+
+
+    for(unsigned int i = 0; i < expectedmatrTraccia.rows(); i++){
+        for(unsigned int j = 0; j < expectedmatrTraccia.cols(); j++){
+            EXPECT_NEAR(Fract.coordinateIntersezioniTracce[make_pair(0,1)](i, j), expectedmatrTraccia(i, j), tol);
+        }
+    }
+}
+
 TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, lunghezzaTracce){
+
+    double tol = 1e-6;
+    unsigned int numeroTracceTotali = 1;
+
+    MatrixXd matrCoordinateFratture1(3, 4); // 3 righe per x, y, z; 4 colonne per i 4 vertici
+    matrCoordinateFratture1 << 0, 1, 1, 0,
+                                0, 0, 1, 1,
+                                0, 0, 0, 0;
+
+    // Assegna le coordinate della frattura all'id 0
+    Fract.coordinateFratture[0] = matrCoordinateFratture1;
+
+    MatrixXd matrCoordinateFratture2(3, 4); // 3 righe per x, y, z; 4 colonne per i 4 vertici
+    matrCoordinateFratture2 << 0.8, 0.8, 0.8, 0.8,
+        0, 0, 1, 1,
+        -0.1, 0.299999999, 0.299999999, -0.1;
+
+    // Assegna le coordinate della frattura all'id 0
+    Fract.coordinateFratture[1] = matrCoordinateFratture2;
+
+    Vector3d coordinateP(0.8, 0, 0);
+    Vector3d coeffDirRettaTraccia(0, -0.4, 0);
+
+
+    Fract.coordinatePuntoP[make_pair(0,1)] = coordinateP;
+    Fract.coeffDirettoriRettaTraccia[make_pair(0,1)] = coeffDirRettaTraccia;
+
+
+    MatrixXd matrLati1(4, 3); // 4 righe per x, y, z; 3 colonne per i 4 vertici
+    matrLati1 << 1, 0, 0,
+        0, 1, 0,
+        -1, 0, 0,
+        0, -1, 0;
+
+    MatrixXd matrLati2(4, 3); // 4 righe per x, y, z; 3 colonne per i 4 vertici
+    matrLati2 << 0, 0, 0.4,
+        0, 1, 0,
+        0, 0, -0.4,
+        0, -1, 0;
+
+    Fract.coeffDirettoriRettaLati[0] = matrLati1;
+    Fract.coeffDirettoriRettaLati[1] = matrLati2;
+
+    double expectedLunghezzaTraccia = 1;
+    // Fract.coordinateIntersezioniTracce[make_pair(0,1)] = matrTraccia;
+
+    // Chiamata alla funzione
+    bool result = calcoloIntersezioneRettaTracciaERettalati(Fract, numeroTracceTotali);
+
+    // Verifica del risultato
+    ASSERT_TRUE(result);
+
+    EXPECT_NEAR(Fract.lunghezzaTracce[make_pair(0,1)], expectedLunghezzaTraccia, tol);
+}
+
+TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, lunghezzaTracceNulla){
 
     double tol = 1e+4 * numeric_limits<double>::epsilon();
 
