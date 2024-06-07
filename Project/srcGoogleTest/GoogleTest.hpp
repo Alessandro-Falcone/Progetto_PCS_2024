@@ -52,7 +52,8 @@ TEST(DistanzaMassimaBaricentroTest, DistanzaBaricentri){
     }
 }
 
-// TEST SULLA DISTANZA MASSIMA TRA BARICENTRO E VERTICI e le coordinate baricentriche
+// TEST SULLA DISTANZA MASSIMA TRA BARICENTRO E VERTICI
+// data una matrice di vertici verifichiamo che il codice restituisca la massima distanza tra baricentro e vertici corretta
 TEST(DistanzaMassimaBaricentroTest, BasicTest){
     // DFN Fract;
     double tol = 1e+4 * numeric_limits<double>::epsilon();
@@ -97,6 +98,7 @@ TEST(TestFunzioneCalcoloEqPianoEdEqRetteLati, RestituisceTrue){
 }
 
 // TEST sull'equazione dei piani che contengono il poligono e l'equazione delle rette passanti per i lati
+// verifichiamo che date le coordinate dei vertici di un poligono il codice resituisca correttamente l'eq del piano e le eq delle rette passanti per i lati
 TEST(TestFunzioneCalcoloEqPianoEdEqRetteLati, BasicTest) {
     // DFN Fract;
     double tol = 1e+4 * numeric_limits<double>::epsilon();
@@ -152,9 +154,9 @@ TEST(TestFunzioneCalcoloIntersezionePiani, RestituisceTrue){
     ASSERT_GE(Fract.coordinatePuntoP.size(), 0); // verifico che la mappa non sia vuota
     ASSERT_GE(Fract.coeffDirettoriRettaTraccia.size(), 0); // verifico che la mappa non sia vuota
 }
-// traccia numero: 0 P: 8.0000000000000016e-01 0.0000000000000000e+00 0.0000000000000000e+00
-//     ( 0.0000000000000000e+00 -4.0000000000000002e-01  0.0000000000000000e+00) * t
 
+// TEST sul calcolo del punto P, punto appartenente alla retta della traccia
+// passiamo l'eq dei piani delle due fratture
 TEST(TestFunzioneCalcoloIntersezionePiani, BasicTestCoordinatePuntoP){
     // DFN Fract;
     double tol = 1e-6;
@@ -182,6 +184,8 @@ TEST(TestFunzioneCalcoloIntersezionePiani, BasicTestCoordinatePuntoP){
 
 }
 
+// TEST sull'eq della retta della traccia
+// verifichiamo la correttezza dei coefficienti direttori della retta della traccia
 TEST(TestFunzioneCalcoloIntersezionePiani, BasicTestCoefficientiDirettoriRettaTraccia){
     double tol = 1e-6;
     unsigned int numIntersezioniFratture = 1;
@@ -209,7 +213,7 @@ TEST(TestFunzioneCalcoloIntersezionePiani, BasicTestCoefficientiDirettoriRettaTr
     EXPECT_NEAR(Fract.coeffDirettoriRettaTraccia[make_pair(0,1)][2] , expectedcoefficientiDirettoriRettaTraccia(2), tol);
 }
 
-// Test per la funzione calcoloIntersezioneRettaTracciaERettalati
+// TEST per la funzione calcoloIntersezioneRettaTracciaERettalati
 TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, RestituisceTrue){
     unsigned int numeroTracceTotali = 0;
     bool result = calcoloIntersezioneRettaTracciaERettalati(Fract, numeroTracceTotali);
@@ -220,6 +224,7 @@ TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, RestituisceTrue){
     ASSERT_GE(Fract.lunghezzaTracce.size(), 0); // verifico che la mappa non sia vuota
 }
 
+// TEST sul punto iniziale e finale del segmento della traccia
 TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, CoordinatePuntiTraccia){
 
     double tol = 1e-6;
@@ -283,6 +288,7 @@ TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, CoordinatePuntiTracc
     }
 }
 
+// TEST sulla lunghezza della traccia
 TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, lunghezzaTracce){
 
     double tol = 1e-6;
@@ -377,45 +383,6 @@ TEST(TestFunzioneStampaDatiSulFileVTKDiParaview, AperturaCorrettaERestituisceTru
     bool result = stampaDatiSulFileVTKDiParaview(percorsoFileVTK, Fract);
     ASSERT_TRUE(result);
 }
-
-// TEST(CalcoloIntersezionePianiTest, BasicTest) {
-//     DFN fract;
-
-//     // Inizializzazione della struttura Fract con dati di esempio
-//     fract.idFrattureCheSiIntersecano[0] = std::make_pair(1, 2); // Esempio di fratture che si intersecano
-
-//     fract.coeffabcPiano[1] = Vector3d(1, 2, 3); // Coefficienti a, b, c del piano della frattura 1
-//     fract.coeffdPiano[1] = 4.0; // Termine noto d del piano della frattura 1
-
-//     fract.coeffabcPiano[2] = Vector3d(2, 1, 3); // Coefficienti a, b, c del piano della frattura 2
-//     fract.coeffdPiano[2] = 5.0; // Termine noto d del piano della frattura 2
-
-//     unsigned int numIntersezioniFratture = 1; // Numero di intersezioni
-
-//     // Chiamata alla funzione
-//     bool result = calcoloIntersezionePiani(fract, numIntersezioniFratture);
-
-//     // Verifica del risultato
-//     ASSERT_TRUE(result);
-
-//     // Verifica se le intersezioni sono state calcolate correttamente
-//     ASSERT_EQ(fract.coordinatePuntoP.size(), 1); // Dovrebbe esserci una sola intersezione
-//     ASSERT_EQ(fract.coeffDirettoriRettaTraccia.size(), 1); // Dovrebbe esserci una sola intersezione
-
-//     // Verifica delle coordinate del punto P
-//     Vector3d expectedPuntoP(1.0, 1.0, -1.0); // Coordinate del punto P atteso
-//     ASSERT_TRUE(fract.coordinatePuntoP.count(std::make_pair(1, 2)) > 0); // Verifica se l'intersezione è stata salvata
-//     EXPECT_TRUE(fract.coordinatePuntoP[std::make_pair(1, 2)].isApprox(expectedPuntoP)); // Verifica se le coordinate del punto P sono corrette
-
-//     // Verifica dei coefficienti direttori della retta di traccia
-//     Vector3d expectedCoeffDirettoriRettaTraccia(3.0, -3.0, -5.0); // Coefficienti direttori attesi
-//     ASSERT_TRUE(fract.coeffDirettoriRettaTraccia.count(std::make_pair(1, 2)) > 0); // Verifica se i coefficienti direttori sono stati salvati
-//     EXPECT_TRUE(fract.coeffDirettoriRettaTraccia[std::make_pair(1, 2)].isApprox(expectedCoeffDirettoriRettaTraccia)); // Verifica se i coefficienti direttori sono corretti
-// }
-
-
-
-
 
 #endif
 
