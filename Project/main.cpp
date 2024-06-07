@@ -1,31 +1,33 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include "Eigen/Eigen"
 #include "srcUt/DFN.hpp"
 #include "srcUt/Utils.hpp"
-#include "Eigen/Eigen"
-
-#include <vector>
-#include <string>
 #include "srcParaview/Paraview.hpp"
+#include "srcParte2/PolygonalMesh.hpp"
+#include "srcParte2/Utils2poligoni.hpp"
 
 using namespace std;
 using namespace Eigen;
 using namespace DFNLibrary;
+using namespace PolygonalLibrary;
 
 int main(){
 
+    // prima parte progetto
     DFN Fract;
 
-    string fileFR = "DFN/FR3_data.txt";
-    string fileOutputPuntiDiIntersezione = "./puntiDiIntersezione.txt";
-    string fileOutputLunghezzaTracce = "./lunghezzaTracce.txt";
+    string percorsoFileFR = "DFN/FR10_data.txt";
+    string percorsoFileOutputPuntiDiIntersezione = "./puntiDiIntersezione.txt";
+    string percorsoFileOutputLunghezzaTracce = "./lunghezzaTracce.txt";
+    string fileVTK = "./intersezioniTracce.vtk";
 
     unsigned int numFract = 0; // numero di fratture
     unsigned int numIntersezioniFratture = 0; // si conta il numero di fratture che si intersecano
     unsigned int numeroTracceTotali = 0; // numero tracce totali
 
-    if(!letturaDatiFileFR(fileFR, Fract, numFract)){
+    if(!letturaDatiFileFR(percorsoFileFR, Fract, numFract)){
         cerr << "Errore: impossibile leggere la frattura" << endl;
         return 1;
     }
@@ -51,21 +53,22 @@ int main(){
         return -1;
     }
 
-    cout << endl;
+    // cout << endl;
     cout << "numero delle tracce: " << numeroTracceTotali << endl;
-    if(!stampaDatiSuiFileDiOutput(fileOutputPuntiDiIntersezione, fileOutputLunghezzaTracce, Fract, numeroTracceTotali)){
+    if(!stampaDatiSuiFileDiOutput(percorsoFileOutputPuntiDiIntersezione, percorsoFileOutputLunghezzaTracce, Fract, numeroTracceTotali)){
         cerr << "Errore: impossibile stampare sui file di output" << endl;
         return -1;
     }
 
-    // vector<intersezioni> tracce = readTracesFromFile("./puntiDiIntersezione.txt");
-    string fileVTK = "./intersezioniTracce.vtk";
     if(!stampaDatiSulFileVTKDiParaview(fileVTK, Fract)){
         cerr << "Errore: impossibile stampare sul file da esportare su paraview" << endl;
         return -1;
     }else{
         cout << "il file VTK e' stato scritto con successo" << endl;
     }
+
+    // secondo parte progetto
+    PolygonalMesh mesh;
 
     return 0;
 }

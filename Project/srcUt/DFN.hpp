@@ -13,6 +13,9 @@ struct DFN{
     // definiamo una mappa che associa a una chiave (che coincide con l'id nel testo di lettura) la matrice delle coordinate dei vertici
     map<unsigned int, MatrixXd> coordinateFratture = {};
 
+    map<unsigned int, double> maxDistanzaBaricentri = {};
+    // vector<double> maxDistanza = {};
+
     // in base al numero di intersezioni, si tiene traccia di quali fratture si intersecano tramite il loro id
     map<unsigned int, pair<unsigned int, unsigned int>> idFrattureCheSiIntersecano = {};
 

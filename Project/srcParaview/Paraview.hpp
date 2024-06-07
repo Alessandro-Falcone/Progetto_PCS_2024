@@ -9,7 +9,7 @@
 using namespace std;
 namespace DFNLibrary{
 
-bool stampaDatiSulFileVTKDiParaview(const string &percorsoFileVTK, DFN &Fract){
+bool stampaDatiSulFileVTKDiParaview(string &percorsoFileVTK, DFN &Fract){
 
     ofstream fileVTK;
     fileVTK.open(percorsoFileVTK);
