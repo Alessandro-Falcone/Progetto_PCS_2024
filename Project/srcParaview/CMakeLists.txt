@@ -1,3 +1,4 @@
+list(APPEND srcParaview_sources "${CMAKE_CURRENT_SOURCE_DIR}/Paraview.cpp")
 list(APPEND srcParaview_headers "${CMAKE_CURRENT_SOURCE_DIR}/Paraview.hpp")
 
 
