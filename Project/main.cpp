@@ -21,6 +21,7 @@ int main(){
     string percorsoFileFR = "DFN/FR3_data.txt";
     string percorsoFileOutputPuntiDiIntersezione = "./puntiDiIntersezione.txt";
     string percorsoFileOutputLunghezzaTracce = "./lunghezzaTracce.txt";
+    string fileVTK2 = "./fratture.vtk";
     string fileVTK = "./intersezioniTracce.vtk";
 
     unsigned int numFract = 0; // numero di fratture
@@ -65,6 +66,13 @@ int main(){
         return 1;
     }else{
         cout << "il file VTK e' stato scritto con successo" << endl;
+    }
+
+    if(!stampaDatiSulFileVTKDiParaview2(fileVTK2, Fract)){
+        cerr << "Errore: impossibile stampare sul file da esportare su paraview" << endl;
+        return 1;
+    }else{
+        cout << "il file VTK2 e' stato scritto con successo" << endl;
     }
 
     // cout << endl;

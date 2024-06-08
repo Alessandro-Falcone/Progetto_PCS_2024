@@ -97,6 +97,128 @@ bool stampaDatiSulFileVTKDiParaview(string &percorsoFileVTK, DFN &Fract){
         return true;
         }
     }
+
+bool stampaDatiSulFileVTKDiParaview2(string &percorsoFileVTK2, DFN &Fract){
+
+        ofstream fileVTK2;
+        fileVTK2.open(percorsoFileVTK2);
+
+        if(fileVTK2.fail()){
+            cerr << "errore: impossibile aprire il file " << percorsoFileVTK2 << endl;
+            return false;
+        }else{
+            // Scrivo l'intestazione
+            fileVTK2 << "# vtk DataFile Version 3.0" << endl;
+            fileVTK2 << "VTK file for point and line visualization" << endl;
+            fileVTK2 << "ASCII" << endl;
+            fileVTK2 << "DATASET POLYDATA" << endl;
+
+            size_t totalPoints = 0;
+            size_t totalLines = 0;
+            size_t totalIndices = 0;
+
+            // Calcolo il numero totale di punti e segmenti
+            for(const auto& frattura : Fract.coordinateFratture){
+                totalPoints += frattura.second.cols();
+                totalLines += frattura.second.cols();
+                totalIndices += 3 * frattura.second.cols();
+            }
+
+            // Scrivo i punti
+            fileVTK2 << "POINTS " << totalPoints << " double" << endl;
+            for(const auto& frattura : Fract.coordinateFratture){
+                const MatrixXd& coordinateFrattura = frattura.second;
+                for(unsigned int i = 0; i < coordinateFrattura.cols(); i++){
+                    fileVTK2 << setprecision(4) << coordinateFrattura(0, i) << " "
+                             << coordinateFrattura(1, i) << " " << coordinateFrattura(2, i) << endl;
+                }
+            }
+
+            // Scrivo i segmenti
+            fileVTK2 << "LINES " << totalLines << " " << totalIndices << endl;
+            size_t pointIndex = 0;
+            for(const auto& frattura : Fract.coordinateFratture){
+                const MatrixXd& coordinateFrattura = frattura.second;
+                for(unsigned int i = 0; i < coordinateFrattura.cols(); i++){
+                    size_t startIdx = (pointIndex + i) % totalPoints; // Indice inizio del segmento
+                    size_t endIdx = (pointIndex + (i + 1)) % totalPoints; // Indice fine del segmento
+                    if(endIdx == (coordinateFrattura.cols() + pointIndex) || endIdx == 0){
+                        unsigned int end = 0;
+                        fileVTK2 << "2 " << startIdx << " " << end + pointIndex << endl;
+                    }else{
+                        fileVTK2 << "2 " << startIdx << " " << endIdx << endl;
+                    }
+                }
+                pointIndex += coordinateFrattura.cols();
+            }
+
+            // Aggiungo dati scalari ai punti
+            fileVTK2 << "POINT_DATA " << totalPoints << endl;
+            fileVTK2 << "SCALARS FractureId int 1" << endl;
+            fileVTK2 << "LOOKUP_TABLE default" << endl;
+            for(const auto& frattura : Fract.coordinateFratture){
+                for(unsigned int i = 0; i < frattura.second.cols(); i++){
+                    fileVTK2 << frattura.first << endl;
+                }
+            }
+
+            pointIndex = 0;
+            // Aggiungo vettori ai punti (direzioni dei segmenti)
+            fileVTK2 << "VECTORS SegmentDirection double" << endl;
+            for(const auto& frattura : Fract.coordinateFratture){
+                const MatrixXd& coordinateFrattura = frattura.second;
+                for(unsigned int i = 0; i < coordinateFrattura.cols(); i++){
+                    size_t startIdx = (i) % totalPoints; // Indice inizio del segmento
+                    size_t endIdx = (i + 1) % totalPoints; // Indice fine del segmento
+                    if(endIdx == coordinateFrattura.cols()){
+                        unsigned int end = 0;
+                        Vector3d segmenti = coordinateFrattura.col(end) - coordinateFrattura.col(startIdx);
+                        fileVTK2 << setprecision(4) << segmenti(0) << " " << segmenti(1) << " " << segmenti(2) << endl;
+                    }else{
+                        Vector3d segmenti = coordinateFrattura.col(endIdx) - coordinateFrattura.col(startIdx);
+                        fileVTK2 << setprecision(4) << segmenti(0) << " " << segmenti(1) << " " << segmenti(2) << endl;
+                    }
+                }
+                pointIndex += coordinateFrattura.cols();
+            }
+
+            pointIndex = 0;
+            // Aggiungo dati scalari ai segmenti
+            fileVTK2 << "CELL_DATA " << totalLines << endl;
+            fileVTK2 << "SCALARS SegmentLength double 1" << endl;
+            fileVTK2 << "LOOKUP_TABLE default" << endl;
+            for(const auto& frattura : Fract.coordinateFratture){
+                const MatrixXd& coordinateFrattura = frattura.second;
+                for(unsigned int i = 0; i < coordinateFrattura.cols(); i++){
+                    size_t startIdx = (i) % totalPoints; // Indice inizio del segmento
+                    size_t endIdx = (i + 1) % totalPoints; // Indice fine del segmento
+                    if(endIdx == coordinateFrattura.cols()){
+                        unsigned int end = 0;
+                        Vector3d differenza = coordinateFrattura.col(end) - coordinateFrattura.col(startIdx);
+                        double quadratoDistanza = differenza.squaredNorm();
+                        fileVTK2 << setprecision(4) << quadratoDistanza << endl;
+                    }else{
+                        Vector3d differenza = coordinateFrattura.col(endIdx) - coordinateFrattura.col(startIdx);
+                        double quadratoDistanza = differenza.squaredNorm();
+                        fileVTK2 << setprecision(4) << quadratoDistanza << endl;
+                    }
+                }
+            }
+
+
+            fileVTK2 << "SCALARS SegmentId int 1" << endl;
+            fileVTK2 << "LOOKUP_TABLE default" << endl;
+            int segmentId = 0;
+            for(const auto& frattura : Fract.coordinateFratture){
+                for(unsigned int i = 0; i < frattura.second.cols(); i++){
+                    fileVTK2 << segmentId++ << endl;
+                }
+            }
+
+            fileVTK2.close();
+            return true;
+        }
+    }
 }
 
 // void writeCSVFile(const string& filename, const vector<Trace>& traces){
