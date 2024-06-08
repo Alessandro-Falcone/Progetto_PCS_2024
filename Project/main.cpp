@@ -21,8 +21,8 @@ int main(){
     string percorsoFileFR = "DFN/FR3_data.txt";
     string percorsoFileOutputPuntiDiIntersezione = "./puntiDiIntersezione.txt";
     string percorsoFileOutputLunghezzaTracce = "./lunghezzaTracce.txt";
-    string fileVTK2 = "./fratture.vtk";
-    string fileVTK = "./intersezioniTracce.vtk";
+    string percorsoFileFrattureParaview = "./fratture.vtk";
+    string percorsoFileTracceParaview = "./tracce.vtk";
 
     unsigned int numFract = 0; // numero di fratture
     unsigned int numIntersezioniFratture = 0; // si conta il numero di fratture che si intersecano
@@ -61,29 +61,15 @@ int main(){
         return 1;
     }
 
-    if(!stampaDatiSulFileVTKDiParaview(fileVTK, Fract)){
-        cerr << "Errore: impossibile stampare sul file da esportare su paraview" << endl;
-        return 1;
-    }else{
-        cout << "il file VTK e' stato scritto con successo" << endl;
+    if(!stampaDatiSulFileFrattureParaview(percorsoFileFrattureParaview, Fract)){
+        cerr << "Errore: impossibile stampare sul file fratture da esportare su paraview" << endl;
+        return 2;
     }
 
-    if(!stampaDatiSulFileVTKDiParaview2(fileVTK2, Fract)){
-        cerr << "Errore: impossibile stampare sul file da esportare su paraview" << endl;
-        return 1;
-    }else{
-        cout << "il file VTK2 e' stato scritto con successo" << endl;
+    if(!stampaDatiSulFileTracceParaview(percorsoFileTracceParaview, Fract)){
+        cerr << "Errore: impossibile stampare sul file tracce da esportare su paraview" << endl;
+        return 2;
     }
-
-    // cout << endl;
-    // cout << "coordinate punto P: " << Fract.coordinatePuntoP[make_pair(0,1)][0] << endl;
-    // cout << "coordinate punto P: " << Fract.coordinatePuntoP[make_pair(0,1)][1] << endl;
-    // cout << "coordinate punto P: " << Fract.coordinatePuntoP[make_pair(0,1)][2] << endl;
-
-    // cout << endl;
-    // cout << "coordinate intersezioni: " << Fract.coordinateIntersezioniTracce[make_pair(0,1)][0] << endl;
-    // cout << "coordinate intersezioni: " << Fract.coordinateIntersezioniTracce[make_pair(0,1)][1] << endl;
-    // cout << "coordinate intersezioni: " << Fract.coordinateIntersezioniTracce[make_pair(0,1)][2] << endl;
 
     // secondo parte progetto
     PolygonalMesh mesh;

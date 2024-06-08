@@ -373,14 +373,25 @@ TEST(TestFunzioneStampaDatiSuiFileDiOutput, AperturaCorrettaERestituisceTrue){
     ASSERT_TRUE(result);
 }
 
-TEST(TestFunzioneStampaDatiSulFileVTKDiParaview, AperturaCorrettaERestituisceTrue){
-    string percorsoFileVTK = "DFN/intersezioniTracce.vtk";
+TEST(TestFunzioneStampaDatiSulFileFrattureParaview, AperturaCorrettaERestituisceTrue){
 
-    string controlloFileVTK = "DFN/nonEsiste.vtk";
+    string percorsoFileFrattureParaview = "DFN/fratture.vtk";
+    string controlloFileFrattureParaview = "DFN/nonEsiste.vtk";
 
-    EXPECT_NE(percorsoFileVTK, controlloFileVTK);
+    EXPECT_NE(percorsoFileFrattureParaview, controlloFileFrattureParaview);
 
-    bool result = stampaDatiSulFileVTKDiParaview(percorsoFileVTK, Fract);
+    bool result = stampaDatiSulFileFrattureParaview(percorsoFileFrattureParaview, Fract);
+    ASSERT_TRUE(result);
+}
+
+TEST(TestFunzioneStampaDatiSulFileTracceParaview, AperturaCorrettaERestituisceTrue){
+
+    string percorsoFileTracceParaview = "DFN/tracce.vtk";
+    string controlloFileTracceParaview = "DFN/nonEsiste.vtk";
+
+    EXPECT_NE(percorsoFileTracceParaview, controlloFileTracceParaview);
+
+    bool result = stampaDatiSulFileTracceParaview(percorsoFileTracceParaview, Fract);
     ASSERT_TRUE(result);
 }
 
