@@ -6,7 +6,7 @@
 #include "srcUt/Utils.hpp"
 #include "srcParaview/Paraview.hpp"
 #include "srcParte2/PolygonalMesh.hpp"
-#include "srcParte2/Utils2poligoni.hpp"
+#include "srcParte2/Utils2poligoni.cpp"
 
 using namespace std;
 using namespace Eigen;
@@ -71,8 +71,15 @@ int main(){
         return 2;
     }
 
-    // secondo parte progetto
+    // seconda parte progetto
     PolygonalMesh mesh;
+
+    if(!letturaMesh(Fract, mesh)){
+        cerr << "Errore: impossibile leggere la mesh" << endl;
+        return 1;
+    }else{
+        cout << "tutto ok" << endl;
+    }
 
     return 0;
 }
