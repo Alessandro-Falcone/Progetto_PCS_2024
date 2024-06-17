@@ -30,6 +30,8 @@ bool letturaDatiFileFR(const string &percorsoFileFR, DFN &Fract, unsigned int &n
         numFract = stoi(line); // converte la stringa con il numero di fratture in un intero
         // vengono lette le prime righe e memorizzate il numero di fratture presenti nel file
 
+        Fract.coordinateFratture.reserve(numFract);
+
         for(unsigned int i = 0; i < numFract; i++){
 
             while(!fileFR.eof() && !rigaTrovata){ // procede la lettura del file saltando le righe con #, appoggiandosi a una variabile booleana
@@ -88,8 +90,10 @@ bool letturaDatiFileFR(const string &percorsoFileFR, DFN &Fract, unsigned int &n
             // ottenuti i vettori riga si vanno a mettere all'interno della matrice
             coordinateVertici << coordX.transpose(), coordY.transpose(), coordZ.transpose();
 
+            Fract.coordinateFratture.push_back(coordinateVertici);
+
             // si riempie la mappa per le coordinate dei vertici definita nella struttura
-            Fract.coordinateFratture[idFrattura] = coordinateVertici;
+            // Fract.coordinateFratture[idFrattura] = coordinateVertici;
 
             // cout << fixed << scientific << setprecision(16) << Fract.coordinateFratture[idFractures] << endl;
             // cout << endl;
@@ -115,9 +119,9 @@ bool calcoloBaricentriEDistBaricentroVertici(DFN &Fract, unsigned int &numFract,
     coordinateBaricentro.reserve(Fract.coordinateFratture.size());
     distMaxBaricentro.reserve(Fract.coordinateFratture.size());
 
-    for(const auto& frattura : Fract.coordinateFratture){ // ciclo per scorrere le fratture
+    for(unsigned int idFratt = 0; idFratt < Fract.coordinateFratture.size(); idFratt++){ // ciclo per scorrere le fratture
 
-        MatrixXd& matrCoordinateFratture = Fract.coordinateFratture[frattura.first]; // prende la matrice con le coordinate dei vertici della frattura associata ad idFrattura
+        MatrixXd matrCoordinateFratture = Fract.coordinateFratture[idFratt]; // prende la matrice con le coordinate dei vertici della frattura associata ad idFrattura
         unsigned int numVertici = matrCoordinateFratture.cols(); // numero di vertici della frattura
 
         // con questo comando .rowwise().sum() si fa la somma sulle righe della matrice che corrispondono alle x, y e z,
@@ -133,10 +137,10 @@ bool calcoloBaricentriEDistBaricentroVertici(DFN &Fract, unsigned int &numFract,
             distanza(v) = (coordBaricentro - matrCoordinateFratture.col(v)).squaredNorm(); // non fa la radice della distanza
         }
         double valMaxDistanza = distanza.maxCoeff(); // valore della distanza massimo per ogni frattura, da utilizzare per la scrematura
-        idFrattura.push_back(frattura.first);
+        idFrattura.push_back(idFratt);
         coordinateBaricentro.push_back(coordBaricentro);
         distMaxBaricentro.push_back(valMaxDistanza); // valore della distanza massimo per ogni frattura si incolla nel vettore appositamente creato per memorizzare la massima distanza tra baricentro vertice
-        Fract.maxDistanzaBaricentri[frattura.first] = valMaxDistanza;
+        // Fract.maxDistanzaBaricentri[idFratt] = valMaxDistanza;
         // Fract.maxDistanza.push_back(valMaxDistanza);
         // cout << "distanza max: " << fixed << scientific << setprecision(9) << Fract.maxDistanzaBaricentri[frattura.first] << endl;
     }
@@ -162,8 +166,8 @@ bool calcoloBaricentriEDistBaricentroVertici(DFN &Fract, unsigned int &numFract,
 
 // con questa funzione andiamo a calcolare le equazioni dei piani che contengono le fratture e le equazioni dei lati delle fratture
 bool calcoloEqPianoEdEqRetteLati(DFN& Fract){
-    for(const auto& frattura : Fract.coordinateFratture){
-        unsigned int idFrattura = frattura.first;
+
+    for(unsigned int idFrattura = 0; idFrattura < Fract.coordinateFratture.size(); idFrattura++){
 
         // Controllo se l'ID della frattura corrente si trova in idFrattureCheSiIntersecano, in modo da non calcolare equazioni di piani in più
         bool interseca = false;
@@ -179,7 +183,7 @@ bool calcoloEqPianoEdEqRetteLati(DFN& Fract){
         }
 
         // Procediamo con il calcolo se la frattura si interseca
-        const MatrixXd& matrCoordinateFratture = frattura.second;
+        MatrixXd matrCoordinateFratture = Fract.coordinateFratture[idFrattura];
 
         // Trova due vettori direttori non paralleli contenuti nel piano
         Vector3d AB = matrCoordinateFratture.col(1) - matrCoordinateFratture.col(0);
@@ -196,7 +200,7 @@ bool calcoloEqPianoEdEqRetteLati(DFN& Fract){
         double termineNoto = dPiano;
         Fract.coeffabcPiano[idFrattura] = abcPiano;
         Fract.coeffdPiano[idFrattura] = termineNoto;
-        cout << "id: " << idFrattura << " termini noti piano: " << termineNoto << endl;
+        // cout << "id: " << idFrattura << " termini noti piano: " << termineNoto << endl;
 
         // Calcolo rette dei lati
         unsigned int numVertici = matrCoordinateFratture.cols();
@@ -683,9 +687,8 @@ bool stampaDatiSuiFileDiOutput(const string &percorsoFileOutputPuntiDiIntersezio
         return false;
     }
 
-    for(const auto& frattura : Fract.coordinateFratture){
+    for(unsigned int idFrattura = 0; idFrattura < Fract.coordinateFratture.size(); idFrattura++){
 
-        unsigned int idFrattura = frattura.first; // estraggo l'id della frattura
         unsigned int numeroTraccePerFrattura = 0; // contatore numero delle tracce per ciascuna frattura
 
         // segue un'altra serie di vettori in cui questa volta nel primo vettore salvo l'id della traccia e negli altri vettori

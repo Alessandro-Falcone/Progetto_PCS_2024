@@ -55,9 +55,8 @@ namespace PolygonalLibrary{
         // unsigned int idCell1Ds = 0; // identificativo celle 1Ds
         // unsigned int idCell2Ds = 0; // identificativo celle 2Ds
         // unsigned int Cell0Ds = 0, Cell1Ds = 0, Cell2Ds = 0; // contatori celle 0Ds, 1Ds, 2Ds
-        for(const auto& frattura : Fract.coordinateFratture){
+        for(unsigned int idFrattura = 0; idFrattura < Fract.coordinateFratture.size(); idFrattura++){
 
-            unsigned int idFrattura = frattura.first; // estraggo l'id della frattura
             unsigned int numeroTraccePerFrattura = 0; // contatore numero delle tracce per ciascuna frattura
             unsigned int numeroTraccePassantiPerFrattura = 0; // contatore numero delle tracce passanti per ciascuna frattura
 

@@ -11,10 +11,11 @@ namespace DFNLibrary{
 struct DFN{
 
     // definiamo una mappa che associa a una chiave (id frattura) la matrice delle coordinate dei vertici
-    map<unsigned int, MatrixXd> coordinateFratture = {};
+    // map<unsigned int, MatrixXd> coordinateFratture = {};
+    vector<MatrixXd> coordinateFratture;
 
     // alla chiave id Frattura associa il valore della massima distanza tra il baricentro e i vertici
-    map<unsigned int, double> maxDistanzaBaricentri = {};
+    // map<unsigned int, double> maxDistanzaBaricentri = {};
 
     // in base al numero di intersezioni, si tiene traccia di quali fratture si intersecano tramite i loro id, la chiave è l'id dell'intersezione
     map<unsigned int, pair<unsigned int, unsigned int>> idFrattureCheSiIntersecano = {};

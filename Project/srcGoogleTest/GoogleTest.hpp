@@ -57,50 +57,50 @@ TEST(TestFunzioneCalcoloBaricentriEDistBaricentroVertici, RestituisceTrue){
     // Verifica del risultato
     ASSERT_TRUE(result);
 
-    ASSERT_GE(Fract.maxDistanzaBaricentri.size(), 0); // verifico che che la mappa non sia vuota
     ASSERT_GE(Fract.idFrattureCheSiIntersecano.size(), 0); // verifico che la mappa non sia vuota
 }
 
-TEST(DistanzaMassimaBaricentroTest, DistanzaBaricentri){
+// TEST(DistanzaMassimaBaricentroTest, DistanzaBaricentri){
 
-    DFN Fract;
-    double tol = 1e+4 * numeric_limits<double>::epsilon();
+//     DFN Fract;
+//     double tol = 1e+4 * numeric_limits<double>::epsilon();
 
-    for(const auto& frattura : Fract.maxDistanzaBaricentri){
-        double maxDistanza = Fract.maxDistanzaBaricentri[frattura.second];
-        ASSERT_GT(maxDistanza, tol);
-    }
-}
+//     for(const auto& frattura : Fract.maxDistanzaBaricentri){
+//         double maxDistanza = Fract.maxDistanzaBaricentri[frattura.second];
+//         ASSERT_GT(maxDistanza, tol);
+//     }
+// }
 
 // TEST SULLA DISTANZA MASSIMA TRA BARICENTRO E VERTICI
 // data una matrice di vertici verifichiamo che il codice restituisca la massima distanza tra baricentro e vertici corretta
-TEST(DistanzaMassimaBaricentroTest, BasicTest){
+// TEST(DistanzaMassimaBaricentroTest, BasicTest){
 
-    DFN Fract;
-    double tol = 1e+4 * numeric_limits<double>::epsilon();
-    // Creazione di una matrice di coordinate per una frattura con 4 vertici
-    MatrixXd matrCoordinateFratture(3, 4); // 3 righe per x, y, z; 4 colonne per i 4 vertici
-    matrCoordinateFratture << 0, 1, 1, 0,
-                              0, 0, 1, 1,
-                              0, 0, 0, 0;
+//     DFN Fract;
+//     double tol = 1e+4 * numeric_limits<double>::epsilon();
+//     // Creazione di una matrice di coordinate per una frattura con 4 vertici
+//     MatrixXd matrCoordinateFratture(3, 4); // 3 righe per x, y, z; 4 colonne per i 4 vertici
+//     matrCoordinateFratture << 0, 1, 1, 0,
+//                               0, 0, 1, 1,
+//                               0, 0, 0, 0;
 
-    // Assegna le coordinate della frattura all'id 0
-    Fract.coordinateFratture[0] = matrCoordinateFratture;
+//     Fract.coordinateFratture.reserve(1);
+//     // Assegna le coordinate della frattura all'id 0
+//     Fract.coordinateFratture.push_back(matrCoordinateFratture);
 
-    // Valori attesi
-    double expectedMaxDistanza = 0.5; // Distanza tra il baricentro e l'angolo (0,1,0)
-    // Numero di fratture e intersezioni
-    unsigned int numFract = 1;
-    unsigned int numIntersezioniFratture = 0;
+//     // Valori attesi
+//     double expectedMaxDistanza = 0.5; // Distanza tra il baricentro e l'angolo (0,1,0)
+//     // Numero di fratture e intersezioni
+//     unsigned int numFract = 1;
+//     unsigned int numIntersezioniFratture = 0;
 
-    // Chiamata alla funzione
-    bool result = calcoloBaricentriEDistBaricentroVertici(Fract, numFract, numIntersezioniFratture);
+//     // Chiamata alla funzione
+//     bool result = calcoloBaricentriEDistBaricentroVertici(Fract, numFract, numIntersezioniFratture);
 
-    // Verifica del risultato
-    ASSERT_TRUE(result);
+//     // Verifica del risultato
+//     ASSERT_TRUE(result);
 
-    EXPECT_NEAR(Fract.maxDistanzaBaricentri[0], expectedMaxDistanza, tol); // Verifica della massima distanza
-}
+//     EXPECT_NEAR(Fract.maxDistanzaBaricentri[0], expectedMaxDistanza, tol); // Verifica della massima distanza
+// }
 
 TEST(TestFunzioneCalcoloBaricentriEDistBaricentroVertici, MappaidFrattureCheSiIntersecanoNonVuota){
 
@@ -147,8 +147,11 @@ TEST(TestFunzioneCalcoloEqPianoEdEqRetteLati, BasicTest) {
                                  -0.1, 0.299999, 0.299999, -0.1;
 
     // Assegna le coordinate della frattura all'id 0
-    Fract.coordinateFratture.insert({0, matrCoordinateFratture1});
-    Fract.coordinateFratture.insert({1, matrCoordinateFratture2});
+
+    Fract.coordinateFratture.reserve(2);
+    Fract.coordinateFratture.push_back(matrCoordinateFratture1);
+    Fract.coordinateFratture.push_back(matrCoordinateFratture2);
+
 
     // Valori attesi
     Vector3d expectedabcPiano(0, 0, 1);
@@ -295,7 +298,9 @@ TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, CoordinatePuntiTracc
                                0, 0, 0, 0;
 
     // Assegna le coordinate della frattura all'id 0
-    Fract.coordinateFratture[0] = matrCoordinateFratture1;
+    Fract.coordinateFratture.reserve(2);
+    // Assegna le coordinate della frattura all'id 0
+    Fract.coordinateFratture.push_back(matrCoordinateFratture1);
 
     MatrixXd matrCoordinateFratture2(3, 4); // 3 righe per x, y, z; 4 colonne per i 4 vertici
     matrCoordinateFratture2 << 0.8, 0.8, 0.8, 0.8,
@@ -303,7 +308,7 @@ TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, CoordinatePuntiTracc
                             -0.1, 0.299999999, 0.299999999, -0.1;
 
     // Assegna le coordinate della frattura all'id 0
-    Fract.coordinateFratture[1] = matrCoordinateFratture2;
+    Fract.coordinateFratture.push_back(matrCoordinateFratture2);
 
     Vector3d coordinateP(0.8, 0, 0);
     Vector3d coeffDirRettaTraccia(0, -0.4, 0);
@@ -356,7 +361,9 @@ TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, lunghezzaTracce){
                                0, 0, 0, 0;
 
     // Assegna le coordinate della frattura all'id 0
-    Fract.coordinateFratture[0] = matrCoordinateFratture1;
+    Fract.coordinateFratture.reserve(2);
+    // Assegna le coordinate della frattura all'id 0
+    Fract.coordinateFratture.push_back(matrCoordinateFratture1);
 
     MatrixXd matrCoordinateFratture2(3, 4); // 3 righe per x, y, z; 4 colonne per i 4 vertici
     matrCoordinateFratture2 << 0.8, 0.8, 0.8, 0.8,
@@ -364,7 +371,7 @@ TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, lunghezzaTracce){
                                 -0.1, 0.299999999, 0.299999999, -0.1;
 
     // Assegna le coordinate della frattura all'id 0
-    Fract.coordinateFratture[1] = matrCoordinateFratture2;
+    Fract.coordinateFratture.push_back(matrCoordinateFratture2);
 
     Vector3d coordinateP(0.8, 0, 0);
     Vector3d coeffDirRettaTraccia(0, -0.4, 0);

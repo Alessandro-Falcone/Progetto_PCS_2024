@@ -133,41 +133,43 @@ bool stampaDatiSulFileFrattureParaview(const string &percorsoFileFrattureParavie
         unsigned int poligoniTotali = 0;
 
         // Calcolo il numero totale di punti e poligoni
-        for(const auto& frattura : Fract.coordinateFratture){
-            puntiTotali += frattura.second.cols();
+        for(unsigned int idFrattura = 0; idFrattura < Fract.coordinateFratture.size(); idFrattura++){
+            MatrixXd matrCoordinateFrattura = Fract.coordinateFratture[idFrattura];
+            puntiTotali += matrCoordinateFrattura.cols();
             poligoniTotali += 1;  // Supponendo che ogni frattura rappresenti un poligono
         }
 
         // Scrivo i punti
         fileFrattureParaview << "POINTS " << puntiTotali << " double" << endl;
-        for(const auto& frattura : Fract.coordinateFratture){
-            const MatrixXd& coordinateFrattura = frattura.second;
-            for(unsigned int i = 0; i < coordinateFrattura.cols(); i++){
-                fileFrattureParaview << fixed << scientific << setprecision(16) << coordinateFrattura(0, i) << " "
-                                     << coordinateFrattura(1, i) << " " << coordinateFrattura(2, i) << endl;
+        for(unsigned int idFrattura = 0; idFrattura < Fract.coordinateFratture.size(); idFrattura++){
+            MatrixXd matrCoordinateFrattura = Fract.coordinateFratture[idFrattura];
+            for(unsigned int i = 0; i < matrCoordinateFrattura.cols(); i++){
+                fileFrattureParaview << fixed << scientific << setprecision(16) << matrCoordinateFrattura(0, i) << " "
+                                     << matrCoordinateFrattura(1, i) << " " << matrCoordinateFrattura(2, i) << endl;
             }
         }
 
         // Scrivo i poligoni
         fileFrattureParaview << "POLYGONS " << poligoniTotali << " " << poligoniTotali * 5 << endl;
         unsigned int indicePunto = 0;
-        for(const auto& frattura : Fract.coordinateFratture){
-            const MatrixXd& coordinateFrattura = frattura.second;
+        for(unsigned int idFrattura = 0; idFrattura < Fract.coordinateFratture.size(); idFrattura++){
+            MatrixXd matrCoordinateFrattura = Fract.coordinateFratture[idFrattura];
             fileFrattureParaview << "4 "
                                  << indicePunto << " "
                                  << indicePunto + 1 << " "
                                  << indicePunto + 2 << " "
                                  << indicePunto + 3 << endl;
-            indicePunto += coordinateFrattura.cols();
+            indicePunto += matrCoordinateFrattura.cols();
         }
 
         // Aggiungo dati scalari ai punti
         fileFrattureParaview << "POINT_DATA " << puntiTotali << endl;
         fileFrattureParaview << "SCALARS FractureId int 1" << endl;
         fileFrattureParaview << "LOOKUP_TABLE default" << endl;
-        for(const auto& frattura : Fract.coordinateFratture){
-            for(unsigned int i = 0; i < frattura.second.cols(); i++){
-                fileFrattureParaview << frattura.first << endl;
+        for(unsigned int idFrattura = 0; idFrattura < Fract.coordinateFratture.size(); idFrattura++){
+            MatrixXd matrCoordinateFrattura = Fract.coordinateFratture[idFrattura];
+            for(unsigned int i = 0; i < matrCoordinateFrattura.cols(); i++){
+                fileFrattureParaview << idFrattura << endl;
             }
         }
 
@@ -175,8 +177,8 @@ bool stampaDatiSulFileFrattureParaview(const string &percorsoFileFrattureParavie
         fileFrattureParaview << "CELL_DATA " << poligoniTotali << endl;
         fileFrattureParaview << "SCALARS FractureColor int 1" << endl;
         fileFrattureParaview << "LOOKUP_TABLE default" << endl;
-        for(const auto& frattura : Fract.coordinateFratture){
-            fileFrattureParaview << frattura.first << endl;
+        for(unsigned int idFrattura = 0; idFrattura < Fract.coordinateFratture.size(); idFrattura++){
+            fileFrattureParaview << idFrattura << endl;
         }
 
         fileFrattureParaview.close();
