@@ -6,7 +6,7 @@
 #include "srcUt/Utils.hpp"
 #include "srcParaview/Paraview.hpp"
 #include "srcParte2/PolygonalMesh.hpp"
-#include "srcParte2/Utils2poligoni.cpp"
+#include "srcParte2/Utils2poligoni.hpp"
 
 using namespace std;
 using namespace Eigen;

@@ -44,11 +44,6 @@ list(APPEND ${CMAKE_PROJECT_NAME}_sources ${srcUt_sources})
 list(APPEND ${CMAKE_PROJECT_NAME}_headers ${srcUt_headers})
 list(APPEND ${CMAKE_PROJECT_NAME}_includes ${srcUt_includes})
 
-# add_subdirectory(TestingParaview/Code/src)
-# list(APPEND ${CMAKE_PROJECT_NAME}_sources ${src_paraview_sources})
-# list(APPEND ${CMAKE_PROJECT_NAME}_headers ${src_paraview_headers})
-# list(APPEND ${CMAKE_PROJECT_NAME}_includes ${src_paraview_includes})
-
 add_subdirectory(srcGoogleTest)
 list(APPEND ${CMAKE_PROJECT_NAME}_sources ${srcGoogleTest_sources})
 list(APPEND ${CMAKE_PROJECT_NAME}_headers ${srcGoogleTest_headers})
@@ -58,6 +53,11 @@ add_subdirectory(srcParaview)
 list(APPEND ${CMAKE_PROJECT_NAME}_sources ${srcParaview_sources})
 list(APPEND ${CMAKE_PROJECT_NAME}_headers ${srcParaview_headers})
 list(APPEND ${CMAKE_PROJECT_NAME}_includes ${srcParaview_includes})
+
+add_subdirectory(srcParte2)
+list(APPEND ${CMAKE_PROJECT_NAME}_sources ${srcParte2_sources})
+list(APPEND ${CMAKE_PROJECT_NAME}_headers ${srcParte2_headers})
+list(APPEND ${CMAKE_PROJECT_NAME}_includes ${srcParte2_includes})
 
 # Add file
 ###############################################################################
