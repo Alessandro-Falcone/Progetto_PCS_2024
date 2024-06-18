@@ -9,16 +9,16 @@ using namespace std;
 
 namespace PolygonalLibrary{
 
-    bool letturaMesh(DFN &Fract, PolygonalMesh &mesh){
+    bool letturaMesh(Frattura &Fratt, Traccia &Trac, PolygonalMesh &mesh){
 
-        if(!letturaDatiCell0Ds(Fract, mesh)){
+        if(!letturaDatiCell0Ds(Fratt, Trac, mesh)){
             return false;
         }
 
         return true;
     }
 
-    bool letturaDatiCell0Ds(DFN &Fract, PolygonalMesh &mesh){
+    bool letturaDatiCell0Ds(Frattura &Fratt, Traccia &Trac, PolygonalMesh &mesh){
 
         unsigned int numeroTracceTotali = 0;
 
@@ -28,19 +28,19 @@ namespace PolygonalLibrary{
         vector<bool> passanteONonPassante2;
         vector<double> lunghezzaTracce;
 
-        idFract1.reserve(Fract.coordinateIntersezioniTracce.size());
-        idFract2.reserve(Fract.coordinateIntersezioniTracce.size());
-        passanteONonPassante1.reserve(Fract.coordinateIntersezioniTracce.size());
-        passanteONonPassante2.reserve(Fract.coordinateIntersezioniTracce.size());
-        lunghezzaTracce.reserve(Fract.coordinateIntersezioniTracce.size());
+        idFract1.reserve(Trac.coordinateIntersezioniTracce.size());
+        idFract2.reserve(Trac.coordinateIntersezioniTracce.size());
+        passanteONonPassante1.reserve(Trac.coordinateIntersezioniTracce.size());
+        passanteONonPassante2.reserve(Trac.coordinateIntersezioniTracce.size());
+        lunghezzaTracce.reserve(Trac.coordinateIntersezioniTracce.size());
 
-        for(const auto &frattura : Fract.coordinateIntersezioniTracce){
+        for(const auto &frattura : Trac.coordinateIntersezioniTracce){
 
             unsigned int idFratt1 = frattura.first.first;
             unsigned int idFratt2 = frattura.first.second;
-            bool passONonPass1 = Fract.traccePassantiONonPassanti1[make_pair(idFratt1, idFratt2)];
-            bool passONonPass2 = Fract.traccePassantiONonPassanti2[make_pair(idFratt1, idFratt2)];
-            double lunghezzaTraccia = Fract.lunghezzaTracce[make_pair(idFratt1, idFratt2)];
+            bool passONonPass1 = Trac.traccePassantiONonPassanti1[make_pair(idFratt1, idFratt2)];
+            bool passONonPass2 = Trac.traccePassantiONonPassanti2[make_pair(idFratt1, idFratt2)];
+            double lunghezzaTraccia = Trac.lunghezzaTracce[make_pair(idFratt1, idFratt2)];
 
             idFract1.push_back(idFratt1); // salvo nel vettore idFract1 associato alla prima frattura l'id della frattura 1
             idFract2.push_back(idFratt2); // salvo nel vettore idFract2 associato alla seconda frattura l'id della frattura 2
@@ -49,13 +49,13 @@ namespace PolygonalLibrary{
             lunghezzaTracce.push_back(lunghezzaTraccia); // salvo nel vettore lunghezzaTracce la lunghezza della traccia
         }
 
-        numeroTracceTotali = Fract.coordinateIntersezioniTracce.size(); // numero di tracce totali per il file scelto
+        numeroTracceTotali = Trac.coordinateIntersezioniTracce.size(); // numero di tracce totali per il file scelto
 
         // unsigned int idCell0Ds = 0; // identificativo celle 0Ds
         // unsigned int idCell1Ds = 0; // identificativo celle 1Ds
         // unsigned int idCell2Ds = 0; // identificativo celle 2Ds
         // unsigned int Cell0Ds = 0, Cell1Ds = 0, Cell2Ds = 0; // contatori celle 0Ds, 1Ds, 2Ds
-        for(unsigned int idFrattura = 0; idFrattura < Fract.coordinateFratture.size(); idFrattura++){
+        for(unsigned int idFrattura = 0; idFrattura < Fratt.coordinateFratture.size(); idFrattura++){
 
             unsigned int numeroTraccePerFrattura = 0; // contatore numero delle tracce per ciascuna frattura
             unsigned int numeroTraccePassantiPerFrattura = 0; // contatore numero delle tracce passanti per ciascuna frattura
@@ -127,18 +127,18 @@ namespace PolygonalLibrary{
                 }
 
                 bool passante = false;
-                MatrixXd coordinataFrattura = Fract.coordinateFratture[idFrattura];
+                MatrixXd coordinataFrattura = Fratt.coordinateFratture[idFrattura];
                 MatrixXd matrPuntiDiIntersezionePrecTracciaPassante = MatrixXd::Zero(2,3);
                 Vector3d diffPuntiDiIntersezioneTracciaPassante = Vector3d::Zero();
                 MatrixXd matrPuntiDiIntersezioneSuccTracciaNonPassante = MatrixXd::Zero(2,3);
 
                 if(idTracciaNonPassante.size() > 0){
-                    matrPuntiDiIntersezioneSuccTracciaNonPassante = Fract.coordinateIntersezioniTracce[make_pair(idFract1[idTracciaNonPassante[0]],idFract2[idTracciaNonPassante[0]])];
+                    matrPuntiDiIntersezioneSuccTracciaNonPassante = Trac.coordinateIntersezioniTracce[make_pair(idFract1[idTracciaNonPassante[0]],idFract2[idTracciaNonPassante[0]])];
                 }
 
                 for(unsigned int t = 0; t < idTracciaPassante.size(); t++){
                     cout << idTracciaPassante[t] << "; " << boolalpha << passante << endl;
-                    MatrixXd matrPuntiDiIntersezioneTracciaPassante = Fract.coordinateIntersezioniTracce[make_pair(idFract1[idTracciaPassante[t]],idFract2[idTracciaPassante[t]])];
+                    MatrixXd matrPuntiDiIntersezioneTracciaPassante = Trac.coordinateIntersezioniTracce[make_pair(idFract1[idTracciaPassante[t]],idFract2[idTracciaPassante[t]])];
                     Vector3d diffPuntiDiIntersezioneTracciaPass = matrPuntiDiIntersezioneTracciaPassante.row(1) - matrPuntiDiIntersezioneTracciaPassante.row(0);
 
                     Vector3d diffPrimoPuntoDiIntersezioneSuccTracciaNonPassante1 = matrPuntiDiIntersezioneSuccTracciaNonPassante.row(0) - matrPuntiDiIntersezioneTracciaPassante.row(0);
@@ -202,7 +202,7 @@ namespace PolygonalLibrary{
                         }
                     }
                     // matrice punti di intersezione precedente
-                    matrPuntiDiIntersezionePrecTracciaPassante = Fract.coordinateIntersezioniTracce[make_pair(idFract1[idTracciaPassante[idTracciaPassante.size() -1]],idFract2[idTracciaPassante[idTracciaPassante.size() -1]])];
+                    matrPuntiDiIntersezionePrecTracciaPassante = Trac.coordinateIntersezioniTracce[make_pair(idFract1[idTracciaPassante[idTracciaPassante.size() -1]],idFract2[idTracciaPassante[idTracciaPassante.size() -1]])];
                     // differenza tra questi punti vett AB = B - A
                     diffPuntiDiIntersezioneTracciaPassante = matrPuntiDiIntersezionePrecTracciaPassante.row(1) - matrPuntiDiIntersezionePrecTracciaPassante.row(0);
                 }
@@ -212,7 +212,7 @@ namespace PolygonalLibrary{
                     cout << idTracciaNonPassante[t] << "; " << boolalpha << nonPassante << endl;
 
                     if((t < 1) && (numeroTraccePassantiPerFrattura > 0) && idTracciaNonPassante.size() > 0){
-                        MatrixXd matrPuntiDiIntersezioneSuccTracciaNonPassante = Fract.coordinateIntersezioniTracce[make_pair(idFract1[idTracciaNonPassante[0]],idFract2[idTracciaNonPassante[0]])];
+                        MatrixXd matrPuntiDiIntersezioneSuccTracciaNonPassante = Trac.coordinateIntersezioniTracce[make_pair(idFract1[idTracciaNonPassante[0]],idFract2[idTracciaNonPassante[0]])];
                         // differenza primo dei due punti di intersezione vett AP1 = P1 - A
                         Vector3d diffPrimoPuntoDiIntersezioneSuccTracciaNonPassante1 = matrPuntiDiIntersezioneSuccTracciaNonPassante.row(0) - matrPuntiDiIntersezionePrecTracciaPassante.row(0);
                         // prodotto vettoriale 1 tra AB e AP1
@@ -249,7 +249,7 @@ namespace PolygonalLibrary{
 
                             // prendo la matrice delle coordinate della frattura associata all'idFrattura adesso devo salvarmi i vertici
                             // Per ogni cella 0D: un identificativo e le coordinate 3D
-                            MatrixXd coordinataFrattura = Fract.coordinateFratture[idFrattura];
+                            MatrixXd coordinataFrattura = Fratt.coordinateFratture[idFrattura];
 
                             for(unsigned int i = 0; i < coordinataFrattura.cols(); i++){
                                 // differenza primo dei due punti di intersezione vett matrPuntiDiIntersezionePrecTracciaPassante.row(0)coordinataFrattura.col(i) = coordinataFrattura.col(i) - matrPuntiDiIntersezionePrecTracciaPassante.row(0)
@@ -277,7 +277,7 @@ namespace PolygonalLibrary{
 
                             // prendo la matrice delle coordinate della frattura associata all'idFrattura adesso devo salvarmi i vertici
                             // Per ogni cella 0D: un identificativo e le coordinate 3D
-                            MatrixXd coordinataFrattura = Fract.coordinateFratture[idFrattura];
+                            MatrixXd coordinataFrattura = Fratt.coordinateFratture[idFrattura];
 
                             for(unsigned int i = 0; i < coordinataFrattura.cols(); i++){
                                 // differenza primo dei due punti di intersezione vett matrPuntiDiIntersezionePrecTracciaPassante.row(0)coordinataFrattura.col(i) = coordinataFrattura.col(i) - matrPuntiDiIntersezionePrecTracciaPassante.row(0)
@@ -305,7 +305,7 @@ namespace PolygonalLibrary{
 
                             // prendo la matrice delle coordinate della frattura associata all'idFrattura adesso devo salvarmi i vertici
                             // Per ogni cella 0D: un identificativo e le coordinate 3D
-                            MatrixXd coordinataFrattura = Fract.coordinateFratture[idFrattura];
+                            MatrixXd coordinataFrattura = Fratt.coordinateFratture[idFrattura];
 
                             for(unsigned int i = 0; i < coordinataFrattura.cols(); i++){
                                 // differenza primo dei due punti di intersezione vett matrPuntiDiIntersezionePrecTracciaPassante.row(0)coordinataFrattura.col(i) = coordinataFrattura.col(i) - matrPuntiDiIntersezionePrecTracciaPassante.row(0)
@@ -333,7 +333,7 @@ namespace PolygonalLibrary{
 
                             // prendo la matrice delle coordinate della frattura associata all'idFrattura adesso devo salvarmi i vertici
                             // Per ogni cella 0D: un identificativo e le coordinate 3D
-                            MatrixXd coordinataFrattura = Fract.coordinateFratture[idFrattura];
+                            MatrixXd coordinataFrattura = Fratt.coordinateFratture[idFrattura];
 
                             for(unsigned int i = 0; i < coordinataFrattura.cols(); i++){
                                 // differenza primo dei due punti di intersezione vett matrPuntiDiIntersezionePrecTracciaPassante.row(0)coordinataFrattura.col(i) = coordinataFrattura.col(i) - matrPuntiDiIntersezionePrecTracciaPassante.row(0)
@@ -360,7 +360,7 @@ namespace PolygonalLibrary{
 
                     if(idTracciaNonPassante.size() > 0 && idTracciaPassante.size() == 0){
 
-                        MatrixXd matrPuntiDiIntersezioneTracciaNonPassante = Fract.coordinateIntersezioniTracce[make_pair(idFract1[idTracciaNonPassante[t]],idFract2[idTracciaNonPassante[t]])];
+                        MatrixXd matrPuntiDiIntersezioneTracciaNonPassante = Trac.coordinateIntersezioniTracce[make_pair(idFract1[idTracciaNonPassante[t]],idFract2[idTracciaNonPassante[t]])];
                         Vector3d diffPuntiDiIntersezioneTracciaNonPass = matrPuntiDiIntersezioneTracciaNonPassante.row(1) - matrPuntiDiIntersezioneTracciaNonPassante.row(0);
 
                         for(unsigned int i = 0; i < coordinataFrattura.cols(); i++){

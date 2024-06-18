@@ -8,9 +8,9 @@ using namespace std;
 
 namespace DFNLibrary{
 
-// funzione per la lettura dei dati da file, in input il percorso dove si trova il file, Fract che corrisponde al riferimento
+// funzione per la lettura dei dati da file, in input il percorso dove si trova il file, Fratt che corrisponde al riferimento
 // della struttura per memorizzare i dati e il numero di fratture presenti, passando inizialmente il valore 0
-bool letturaDatiFileFR(const string &percorsoFileFR, DFN &Fract, unsigned int &numFract){
+bool letturaDatiFileFR(const string &percorsoFileFR, Frattura &Fratt, unsigned int &numFract){
 
     ifstream fileFR;
     fileFR.open(percorsoFileFR);
@@ -30,7 +30,7 @@ bool letturaDatiFileFR(const string &percorsoFileFR, DFN &Fract, unsigned int &n
         numFract = stoi(line); // converte la stringa con il numero di fratture in un intero
         // vengono lette le prime righe e memorizzate il numero di fratture presenti nel file
 
-        Fract.coordinateFratture.reserve(numFract);
+        Fratt.coordinateFratture.reserve(numFract);
 
         for(unsigned int i = 0; i < numFract; i++){
 
@@ -90,7 +90,7 @@ bool letturaDatiFileFR(const string &percorsoFileFR, DFN &Fract, unsigned int &n
             // ottenuti i vettori riga si vanno a mettere all'interno della matrice
             coordinateVertici << coordX.transpose(), coordY.transpose(), coordZ.transpose();
 
-            Fract.coordinateFratture.push_back(coordinateVertici);
+            Fratt.coordinateFratture.push_back(coordinateVertici);
 
             // si riempie la mappa per le coordinate dei vertici definita nella struttura
             // Fract.coordinateFratture[idFrattura] = coordinateVertici;
@@ -109,19 +109,19 @@ bool letturaDatiFileFR(const string &percorsoFileFR, DFN &Fract, unsigned int &n
 // questa funzione servirà per estrarre il baricentro da ogni frattura, passando la mappa dove si è memorizzata e la variabile
 // con il numero di fratture ottenuta dalla lettura del file, utile come criterio di arresto per i nostri cicli
 // funzione per la scremature delle fratture lontane
-bool calcoloBaricentriEDistBaricentroVertici(DFN &Fract, unsigned int &numFract, unsigned int &numIntersezioniFratture){
+bool calcoloBaricentriEDistBaricentroVertici(Frattura &Fratt, unsigned int &numFract, unsigned int &numIntersezioniFratture){
 
     vector<unsigned int> idFrattura;
     vector<Vector3d> coordinateBaricentro; // vettore dove a ogni id della frattura viene associato un vettore con le coordinate del baricentro
     vector<double> distMaxBaricentro; // vettore che a ogni id, quindi frattura, associa il valore massimo di distanza tra baricentro e vertici
 
-    idFrattura.reserve(Fract.coordinateFratture.size());
-    coordinateBaricentro.reserve(Fract.coordinateFratture.size());
-    distMaxBaricentro.reserve(Fract.coordinateFratture.size());
+    idFrattura.reserve(Fratt.coordinateFratture.size());
+    coordinateBaricentro.reserve(Fratt.coordinateFratture.size());
+    distMaxBaricentro.reserve(Fratt.coordinateFratture.size());
 
-    for(unsigned int idFratt = 0; idFratt < Fract.coordinateFratture.size(); idFratt++){ // ciclo per scorrere le fratture
+    for(unsigned int idFratt = 0; idFratt < Fratt.coordinateFratture.size(); idFratt++){ // ciclo per scorrere le fratture
 
-        MatrixXd matrCoordinateFratture = Fract.coordinateFratture[idFratt]; // prende la matrice con le coordinate dei vertici della frattura associata ad idFrattura
+        MatrixXd matrCoordinateFratture = Fratt.coordinateFratture[idFratt]; // prende la matrice con le coordinate dei vertici della frattura associata ad idFrattura
         unsigned int numVertici = matrCoordinateFratture.cols(); // numero di vertici della frattura
 
         // con questo comando .rowwise().sum() si fa la somma sulle righe della matrice che corrispondono alle x, y e z,
@@ -156,7 +156,7 @@ bool calcoloBaricentriEDistBaricentroVertici(DFN &Fract, unsigned int &numFract,
 
             // ora con il confronto si vanno a identificare le fratture che si intersecano e quindi ad escludere quelle che non si intersecano
             if(quadratoDistanzaBaricentri < sommaDistanzaMaxBaricentri){
-                Fract.idFrattureCheSiIntersecano[numIntersezioniFratture] = make_pair(idFrattura[i], idFrattura[j]);
+                Fratt.idFrattureCheSiIntersecano[numIntersezioniFratture] = make_pair(idFrattura[i], idFrattura[j]);
                 numIntersezioniFratture++; // si tiene traccia di quante fratture si intersecano
             }
         }
@@ -165,13 +165,13 @@ bool calcoloBaricentriEDistBaricentroVertici(DFN &Fract, unsigned int &numFract,
     }
 
 // con questa funzione andiamo a calcolare le equazioni dei piani che contengono le fratture e le equazioni dei lati delle fratture
-bool calcoloEqPianoEdEqRetteLati(DFN& Fract){
+bool calcoloEqPianoEdEqRetteLati(Frattura &Fratt){
 
-    for(unsigned int idFrattura = 0; idFrattura < Fract.coordinateFratture.size(); idFrattura++){
+    for(unsigned int idFrattura = 0; idFrattura < Fratt.coordinateFratture.size(); idFrattura++){
 
         // Controllo se l'ID della frattura corrente si trova in idFrattureCheSiIntersecano, in modo da non calcolare equazioni di piani in più
         bool interseca = false;
-        for(const auto& idIntersezione : Fract.idFrattureCheSiIntersecano){
+        for(const auto& idIntersezione : Fratt.idFrattureCheSiIntersecano){
             if(idIntersezione.second.first == idFrattura || idIntersezione.second.second == idFrattura){
                 interseca = true;
                 break;
@@ -183,7 +183,7 @@ bool calcoloEqPianoEdEqRetteLati(DFN& Fract){
         }
 
         // Procediamo con il calcolo se la frattura si interseca
-        MatrixXd matrCoordinateFratture = Fract.coordinateFratture[idFrattura];
+        MatrixXd matrCoordinateFratture = Fratt.coordinateFratture[idFrattura];
 
         // Trova due vettori direttori non paralleli contenuti nel piano
         Vector3d AB = matrCoordinateFratture.col(1) - matrCoordinateFratture.col(0);
@@ -198,8 +198,8 @@ bool calcoloEqPianoEdEqRetteLati(DFN& Fract){
         // Carichiamo le informazioni
         Vector3d abcPiano(normalePiano(0), normalePiano(1), normalePiano(2));
         double termineNoto = dPiano;
-        Fract.coeffabcPiano[idFrattura] = abcPiano;
-        Fract.coeffdPiano[idFrattura] = termineNoto;
+        Fratt.coeffabcPiano[idFrattura] = abcPiano;
+        Fratt.coeffdPiano[idFrattura] = termineNoto;
         // cout << "id: " << idFrattura << " termini noti piano: " << termineNoto << endl;
 
         // Calcolo rette dei lati
@@ -213,7 +213,7 @@ bool calcoloEqPianoEdEqRetteLati(DFN& Fract){
             coeffDirettoriRettaLati.row(v) = matrCoordinateFratture.col((v + 1) % numVertici) - matrCoordinateFratture.col(v);
         }
 
-        Fract.coeffDirettoriRettaLati[idFrattura] = coeffDirettoriRettaLati;
+        Fratt.coeffDirettoriRettaLati[idFrattura] = coeffDirettoriRettaLati;
         //cout << "id: " << idFrattura << " coeff Direttori Lati:" << endl;
         //cout << coeffDirettoriRettaLati << endl;
     }
@@ -221,7 +221,7 @@ bool calcoloEqPianoEdEqRetteLati(DFN& Fract){
     }
 
 // trova i coefficienti direttori della retta della traccia e le coordinate del punto P (punto della traccia)
-bool calcoloIntersezionePiani(DFN &Fract, unsigned int &numIntersezioniFratture){
+bool calcoloIntersezionePiani(Frattura &Fratt, Traccia &Trac, unsigned int &numIntersezioniFratture){
 
     // calcolo retta di intersezione tra i due piani
 
@@ -233,21 +233,21 @@ bool calcoloIntersezionePiani(DFN &Fract, unsigned int &numIntersezioniFratture)
     // calcolo la retta della traccia delle fratture che si intersecano
     unsigned int k = 0;
     unsigned int intersezioneP = 0;
-    for(const auto& frattura : Fract.idFrattureCheSiIntersecano){
+    for(const auto& frattura : Fratt.idFrattureCheSiIntersecano){
 
         unsigned int idFrattura1 = frattura.second.first;
         unsigned int idFrattura2 = frattura.second.second;
 
         // aggiunta vettori temporanei se no non mi fa fare il prodotto vettoriale
-        Vector3d vett1 = Fract.coeffabcPiano[idFrattura1];
+        Vector3d vett1 = Fratt.coeffabcPiano[idFrattura1];
         // cout << "id: " << idFrattura1 << " coeff piano: " << vett1.transpose() << endl;
-        Vector3d vett2 = Fract.coeffabcPiano[idFrattura2];
+        Vector3d vett2 = Fratt.coeffabcPiano[idFrattura2];
         // cout << "id: " << idFrattura2 << " coeff piano: " << vett2.transpose() << endl;
         coeffDirettoriRettaTraccia.row(k) = vett1.transpose().cross(vett2.transpose());
         coeffDirettoriRettaTraccia.row(k) = (coeffDirettoriRettaTraccia.row(k).array() == -0).select(0, coeffDirettoriRettaTraccia.row(k)); // può succedere che ho -0 allora lo sostituisco con 0 con questa riga di codice
 
-        A << Fract.coeffabcPiano[idFrattura1].transpose(), Fract.coeffabcPiano[idFrattura2].transpose(), coeffDirettoriRettaTraccia.row(k);
-        terminiNoti << Fract.coeffdPiano[idFrattura1], Fract.coeffdPiano[idFrattura2], 0;
+        A << Fratt.coeffabcPiano[idFrattura1].transpose(), Fratt.coeffabcPiano[idFrattura2].transpose(), coeffDirettoriRettaTraccia.row(k);
+        terminiNoti << Fratt.coeffdPiano[idFrattura1], Fratt.coeffdPiano[idFrattura2], 0;
         terminiNoti = (terminiNoti.array() == -0).select(0, terminiNoti);
 
         // risolvo il sistema lineare per ricavare le coordinate del punto P se la matrice A ha determinante maggiore di una certa tolleranza
@@ -260,12 +260,12 @@ bool calcoloIntersezionePiani(DFN &Fract, unsigned int &numIntersezioniFratture)
 
             // mi salvo gli id delle fratture che soddisfano questo if, questo mi servirà nella prossima funzione
             // mi salvo le coordinate del punto P che soddisfano la condizione dell'if
-            Fract.coordinatePuntoP[make_pair(idFrattura1, idFrattura2)] = coordinatePuntoP;
+            Trac.coordinatePuntoP[make_pair(idFrattura1, idFrattura2)] = coordinatePuntoP;
             // mi salvo i coefficienti direttori della traccia che soddisfano la condizione dell'if
-            Fract.coeffDirettoriRettaTraccia[make_pair(idFrattura1, idFrattura2)] = coeffDirettoriRettaTraccia.row(intersezioneP);
+            Trac.coeffDirettoriRettaTraccia[make_pair(idFrattura1, idFrattura2)] = coeffDirettoriRettaTraccia.row(intersezioneP);
             intersezioneP++;
 
-            cout << "traccia numero: " << k << fixed << scientific << setprecision(16) << " P: " << Fract.coordinatePuntoP[make_pair(idFrattura1, idFrattura2)].transpose() << endl;
+            cout << "traccia numero: " << k << fixed << scientific << setprecision(16) << " P: " << Trac.coordinatePuntoP[make_pair(idFrattura1, idFrattura2)].transpose() << endl;
             cout << " (" << coeffDirettoriRettaTraccia.row(k) << ") * t" << endl;
         }
         k++;
@@ -274,30 +274,30 @@ bool calcoloIntersezionePiani(DFN &Fract, unsigned int &numIntersezioniFratture)
     }
 
 // intersezione retta traccia con la retta dei lati
-bool calcoloIntersezioneRettaTracciaERettalati(DFN &Fract, unsigned int &numeroTracceTotali){
+bool calcoloIntersezioneRettaTracciaERettalati(Frattura &Fratt, Traccia &Trac, unsigned int &numeroTracceTotali){
 
     double tol = 1e+4 * numeric_limits<double>::epsilon();
 
-    for(const auto& frattura : Fract.coordinatePuntoP){
+    for(const auto& frattura : Trac.coordinatePuntoP){
 
         // prendo gli id delle due fratture che sto confrontando
         unsigned int idFrattura1 = frattura.first.first;
         unsigned int idFrattura2 = frattura.first.second;
 
         // vado a prendere il punto P e i coefficienti direttori della retta della traccia associati ai 2 id delle 2 fratture considerate
-        Vector3d& coordinatePuntoP = Fract.coordinatePuntoP[make_pair(idFrattura1, idFrattura2)];
-        Vector3d& coeffDirettoriRettaTraccia = Fract.coeffDirettoriRettaTraccia[make_pair(idFrattura1, idFrattura2)];
+        Vector3d& coordinatePuntoP = Trac.coordinatePuntoP[make_pair(idFrattura1, idFrattura2)];
+        Vector3d& coeffDirettoriRettaTraccia = Trac.coeffDirettoriRettaTraccia[make_pair(idFrattura1, idFrattura2)];
 
         // prendo i coefficienti direttori delle rette dei lati e i punti iniziali delle rette associate al primo id della frattura
-        MatrixXd& coeffDirettoriRettaLatiFrattura1 = Fract.coeffDirettoriRettaLati[idFrattura1];
-        const MatrixXd& puntoInizialeRettaFrattura1 = Fract.coordinateFratture[idFrattura1].transpose();
+        MatrixXd& coeffDirettoriRettaLatiFrattura1 = Fratt.coeffDirettoriRettaLati[idFrattura1];
+        const MatrixXd& puntoInizialeRettaFrattura1 = Fratt.coordinateFratture[idFrattura1].transpose();
 
         // numero di vertici della prima frattura
         unsigned int numVerticiFrattura1 = coeffDirettoriRettaLatiFrattura1.rows();
 
         // prendo i coefficienti direttori delle rette dei lati e i punti iniziali delle rette associate al secondo id della frattura
-        MatrixXd& coeffDirettoriRettaLatiFrattura2 = Fract.coeffDirettoriRettaLati[idFrattura2];
-        const MatrixXd& puntoInizialeRettaFrattura2 = Fract.coordinateFratture[idFrattura2].transpose();
+        MatrixXd& coeffDirettoriRettaLatiFrattura2 = Fratt.coeffDirettoriRettaLati[idFrattura2];
+        const MatrixXd& puntoInizialeRettaFrattura2 = Fratt.coordinateFratture[idFrattura2].transpose();
 
         // numero di vertici della seconda frattura
         unsigned int numVerticiFrattura2 = coeffDirettoriRettaLatiFrattura2.rows();
@@ -517,15 +517,15 @@ bool calcoloIntersezioneRettaTracciaERettalati(DFN &Fract, unsigned int &numeroT
                 double lunghezzaTraccia = (intersezione[posCoordCurvilinea[2]].transpose() - intersezione[posCoordCurvilinea[1]].transpose()).squaredNorm();
 
                 if(idFract[0] < idFract[1]){
-                    Fract.coordinateIntersezioniTracce[make_pair(idFract[0], idFract[1])] = coordinateIntersezioniTraccia;
-                    Fract.traccePassantiONonPassanti1[make_pair(idFract[0], idFract[1])] = tracciaPassante1;
-                    Fract.traccePassantiONonPassanti2[make_pair(idFract[0], idFract[1])] = tracciaPassante2;
-                    Fract.lunghezzaTracce[make_pair(idFract[0], idFract[1])] = lunghezzaTraccia;
+                    Trac.coordinateIntersezioniTracce[make_pair(idFract[0], idFract[1])] = coordinateIntersezioniTraccia;
+                    Trac.traccePassantiONonPassanti1[make_pair(idFract[0], idFract[1])] = tracciaPassante1;
+                    Trac.traccePassantiONonPassanti2[make_pair(idFract[0], idFract[1])] = tracciaPassante2;
+                    Trac.lunghezzaTracce[make_pair(idFract[0], idFract[1])] = lunghezzaTraccia;
                 }else{
-                    Fract.coordinateIntersezioniTracce[make_pair(idFract[1], idFract[0])] = coordinateIntersezioniTraccia;
-                    Fract.traccePassantiONonPassanti1[make_pair(idFract[1], idFract[0])] = tracciaPassante1;
-                    Fract.traccePassantiONonPassanti2[make_pair(idFract[1], idFract[0])] = tracciaPassante2;
-                    Fract.lunghezzaTracce[make_pair(idFract[1], idFract[0])] = lunghezzaTraccia;
+                    Trac.coordinateIntersezioniTracce[make_pair(idFract[1], idFract[0])] = coordinateIntersezioniTraccia;
+                    Trac.traccePassantiONonPassanti1[make_pair(idFract[1], idFract[0])] = tracciaPassante1;
+                    Trac.traccePassantiONonPassanti2[make_pair(idFract[1], idFract[0])] = tracciaPassante2;
+                    Trac.lunghezzaTracce[make_pair(idFract[1], idFract[0])] = lunghezzaTraccia;
                 }
 
                 numeroTracceTotali++; // si conta il numero di tracce
@@ -543,15 +543,15 @@ bool calcoloIntersezioneRettaTracciaERettalati(DFN &Fract, unsigned int &numeroT
                 double lunghezzaTraccia = (intersezione[posCoordCurvilinea[2]].transpose() - intersezione[posCoordCurvilinea[1]].transpose()).squaredNorm();
 
                 if(idFract[0] < idFract[1]){
-                    Fract.coordinateIntersezioniTracce[make_pair(idFract[0], idFract[1])] = coordinateIntersezioniTraccia;
-                    Fract.traccePassantiONonPassanti1[make_pair(idFract[0], idFract[1])] = tracciaNonPassante;
-                    Fract.traccePassantiONonPassanti2[make_pair(idFract[0], idFract[1])] = tracciaPassante;
-                    Fract.lunghezzaTracce[make_pair(idFract[0], idFract[1])] = lunghezzaTraccia;
+                    Trac.coordinateIntersezioniTracce[make_pair(idFract[0], idFract[1])] = coordinateIntersezioniTraccia;
+                    Trac.traccePassantiONonPassanti1[make_pair(idFract[0], idFract[1])] = tracciaNonPassante;
+                    Trac.traccePassantiONonPassanti2[make_pair(idFract[0], idFract[1])] = tracciaPassante;
+                    Trac.lunghezzaTracce[make_pair(idFract[0], idFract[1])] = lunghezzaTraccia;
                 }else{
-                    Fract.coordinateIntersezioniTracce[make_pair(idFract[1], idFract[0])] = coordinateIntersezioniTraccia;
-                    Fract.traccePassantiONonPassanti1[make_pair(idFract[1], idFract[0])] = tracciaPassante;
-                    Fract.traccePassantiONonPassanti2[make_pair(idFract[1], idFract[0])] = tracciaNonPassante;
-                    Fract.lunghezzaTracce[make_pair(idFract[1], idFract[0])] = lunghezzaTraccia;
+                    Trac.coordinateIntersezioniTracce[make_pair(idFract[1], idFract[0])] = coordinateIntersezioniTraccia;
+                    Trac.traccePassantiONonPassanti1[make_pair(idFract[1], idFract[0])] = tracciaPassante;
+                    Trac.traccePassantiONonPassanti2[make_pair(idFract[1], idFract[0])] = tracciaNonPassante;
+                    Trac.lunghezzaTracce[make_pair(idFract[1], idFract[0])] = lunghezzaTraccia;
                 }
 
                 numeroTracceTotali++; // si conta il numero di tracce
@@ -569,15 +569,15 @@ bool calcoloIntersezioneRettaTracciaERettalati(DFN &Fract, unsigned int &numeroT
                 double lunghezzaTraccia = (intersezione[posCoordCurvilinea[2]].transpose() - intersezione[posCoordCurvilinea[1]].transpose()).squaredNorm();
 
                 if(idFract[1] < idFract[2]){
-                    Fract.coordinateIntersezioniTracce[make_pair(idFract[1], idFract[2])] = coordinateIntersezioniTraccia;
-                    Fract.traccePassantiONonPassanti1[make_pair(idFract[1], idFract[2])] = tracciaNonPassante1;
-                    Fract.traccePassantiONonPassanti2[make_pair(idFract[1], idFract[2])] = tracciaNonPassante2;
-                    Fract.lunghezzaTracce[make_pair(idFract[1], idFract[2])] = lunghezzaTraccia;
+                    Trac.coordinateIntersezioniTracce[make_pair(idFract[1], idFract[2])] = coordinateIntersezioniTraccia;
+                    Trac.traccePassantiONonPassanti1[make_pair(idFract[1], idFract[2])] = tracciaNonPassante1;
+                    Trac.traccePassantiONonPassanti2[make_pair(idFract[1], idFract[2])] = tracciaNonPassante2;
+                    Trac.lunghezzaTracce[make_pair(idFract[1], idFract[2])] = lunghezzaTraccia;
                 }else{
-                    Fract.coordinateIntersezioniTracce[make_pair(idFract[2], idFract[1])] = coordinateIntersezioniTraccia;
-                    Fract.traccePassantiONonPassanti1[make_pair(idFract[2], idFract[1])] = tracciaNonPassante1;
-                    Fract.traccePassantiONonPassanti2[make_pair(idFract[2], idFract[1])] = tracciaNonPassante2;
-                    Fract.lunghezzaTracce[make_pair(idFract[2], idFract[1])] = lunghezzaTraccia;
+                    Trac.coordinateIntersezioniTracce[make_pair(idFract[2], idFract[1])] = coordinateIntersezioniTraccia;
+                    Trac.traccePassantiONonPassanti1[make_pair(idFract[2], idFract[1])] = tracciaNonPassante1;
+                    Trac.traccePassantiONonPassanti2[make_pair(idFract[2], idFract[1])] = tracciaNonPassante2;
+                    Trac.lunghezzaTracce[make_pair(idFract[2], idFract[1])] = lunghezzaTraccia;
                 }
 
                 numeroTracceTotali++; // si conta il numero di tracce
@@ -591,7 +591,7 @@ bool calcoloIntersezioneRettaTracciaERettalati(DFN &Fract, unsigned int &numeroT
     return true;
     }
 
-bool stampaDatiSuiFileDiOutput(const string &percorsoFileOutputPuntiDiIntersezione, const string &percorsoFileOutputLunghezzaTracce, DFN &Fract, unsigned int &numeroTracceTotali){
+bool stampaDatiSuiFileDiOutput(const string &percorsoFileOutputPuntiDiIntersezione, const string &percorsoFileOutputLunghezzaTracce, Frattura &Fratt, Traccia &Trac, unsigned int &numeroTracceTotali){
 
     // scrivo sul file di output punti di intersezione
     ofstream filePuntiDiIntersezione;
@@ -616,11 +616,11 @@ bool stampaDatiSuiFileDiOutput(const string &percorsoFileOutputPuntiDiIntersezio
     // in questo vettore invece salvo la lunghezza delle tracce
     vector<double> lunghezzaTracce;
 
-    idFract1.reserve(Fract.coordinateIntersezioniTracce.size());
-    idFract2.reserve(Fract.coordinateIntersezioniTracce.size());
-    passanteONonPassante1.reserve(Fract.coordinateIntersezioniTracce.size());
-    passanteONonPassante2.reserve(Fract.coordinateIntersezioniTracce.size());
-    lunghezzaTracce.reserve(Fract.coordinateIntersezioniTracce.size());
+    idFract1.reserve(Trac.coordinateIntersezioniTracce.size());
+    idFract2.reserve(Trac.coordinateIntersezioniTracce.size());
+    passanteONonPassante1.reserve(Trac.coordinateIntersezioniTracce.size());
+    passanteONonPassante2.reserve(Trac.coordinateIntersezioniTracce.size());
+    lunghezzaTracce.reserve(Trac.coordinateIntersezioniTracce.size());
 
     // continuiamo a lavorare per la stampa dei dati sul primo file punti di intersezione
     // stampo sul file prima l'intestazione e poi il numero di tracce
@@ -633,14 +633,14 @@ bool stampaDatiSuiFileDiOutput(const string &percorsoFileOutputPuntiDiIntersezio
     // in questo for faccio 2 cose
     // 1. vado a stampare i valori riferiti a questa intestazione (# TraceId; FractureId1; FractureId2; X1; Y1; Z1; X2; Y2; Z2)
     // 2. mi salvo tutti i dati nei vettori definiti in precedenza, vettori che mi serviranno per la stampa dei dati sul secondo file lunghezza tracce
-    for(const auto &frattura : Fract.coordinateIntersezioniTracce){
+    for(const auto &frattura : Trac.coordinateIntersezioniTracce){
 
         // le prossime righe di codice stampano i dati sul primo file di output punti di intersezione
         unsigned int idFratt1 = frattura.first.first;
         unsigned int idFratt2 = frattura.first.second;
 
         // estraggo l'informazione dei punti di intersezione che definiscono le tracce associate alle fratture idFratt1 e idFratt2
-        MatrixXd stampaPuntiDiIntersezione = Fract.coordinateIntersezioniTracce[make_pair(idFratt1,idFratt2)];
+        MatrixXd stampaPuntiDiIntersezione = Trac.coordinateIntersezioniTracce[make_pair(idFratt1,idFratt2)];
         // stampo sul file punti di intersezione la seguente informazione # TraceId; FractureId1; FractureId2;
         filePuntiDiIntersezione << idTracce << "; " << idFratt1 << "; " << idFratt2 << "; ";
 
@@ -665,10 +665,10 @@ bool stampaDatiSuiFileDiOutput(const string &percorsoFileOutputPuntiDiIntersezio
         // nelle prossime 2 mappe estraggo
         // nella prima la prima colonna associata alla prima frattura, in cui ho l'informazione se per la prima frattura la traccia è passante o non passante
         // nella seconda la seconda colonna associata alla seconda frattura, in cui ho l'informazione se per la seconda frattura la traccia è passante o non passante
-        bool passONonPass1 = Fract.traccePassantiONonPassanti1[make_pair(idFratt1, idFratt2)];
-        bool passONonPass2 = Fract.traccePassantiONonPassanti2[make_pair(idFratt1, idFratt2)];
+        bool passONonPass1 = Trac.traccePassantiONonPassanti1[make_pair(idFratt1, idFratt2)];
+        bool passONonPass2 = Trac.traccePassantiONonPassanti2[make_pair(idFratt1, idFratt2)];
         // in questa mappa estraggo la lunghezza della traccia associata alle 2 fratture idFratt1 e idFratt2
-        double lunghezzaTraccia = Fract.lunghezzaTracce[make_pair(idFratt1, idFratt2)];
+        double lunghezzaTraccia = Trac.lunghezzaTracce[make_pair(idFratt1, idFratt2)];
 
         idFract1.push_back(idFratt1); // salvo nel vettore idFract1 associato alla prima frattura l'id della frattura 1
         idFract2.push_back(idFratt2); // salvo nel vettore idFract2 associato alla seconda frattura l'id della frattura 2
@@ -687,7 +687,7 @@ bool stampaDatiSuiFileDiOutput(const string &percorsoFileOutputPuntiDiIntersezio
         return false;
     }
 
-    for(unsigned int idFrattura = 0; idFrattura < Fract.coordinateFratture.size(); idFrattura++){
+    for(unsigned int idFrattura = 0; idFrattura < Fratt.coordinateFratture.size(); idFrattura++){
 
         unsigned int numeroTraccePerFrattura = 0; // contatore numero delle tracce per ciascuna frattura
 
