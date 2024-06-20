@@ -192,7 +192,7 @@ bool calcoloEqPianoEdEqRetteLati(Frattura &Fratt){
         // Calcola il vettore normale al piano utilizzando il prodotto vettoriale
         Vector3d normalePiano = AB.cross(AC);
 
-        // Calcola il termine costante dell'equazione del piano
+        // Calcola il termine noto dell'equazione del piano
         double dPiano = -matrCoordinateFratture.col(0).dot(normalePiano);
 
         // Carichiamo le informazioni
@@ -265,8 +265,8 @@ bool calcoloIntersezionePiani(Frattura &Fratt, Traccia &Trac, unsigned int &numI
             Trac.coeffDirettoriRettaTraccia[make_pair(idFrattura1, idFrattura2)] = coeffDirettoriRettaTraccia.row(intersezioneP);
             intersezioneP++;
 
-            cout << "traccia numero: " << k << fixed << scientific << setprecision(16) << " P: " << Trac.coordinatePuntoP[make_pair(idFrattura1, idFrattura2)].transpose() << endl;
-            cout << " (" << coeffDirettoriRettaTraccia.row(k) << ") * t" << endl;
+            // cout << "traccia numero: " << k << fixed << scientific << setprecision(16) << " P: " << Trac.coordinatePuntoP[make_pair(idFrattura1, idFrattura2)].transpose() << endl;
+            // cout << " (" << coeffDirettoriRettaTraccia.row(k) << ") * t" << endl;
         }
         k++;
     }
@@ -504,8 +504,6 @@ bool calcoloIntersezioneRettaTracciaERettalati(Frattura &Fratt, Traccia &Trac, u
                 // cout << "traccia passante per la frattura " << idFract[0] << " e passante per la frattura "  << idFract[1] << endl;
                 // cout << fixed << scientific << setprecision(7) << intersezione[posCoordCurvilinea[1]].transpose() << " " << intersezione[posCoordCurvilinea[2]].transpose() << endl;
 
-                // coordinateIntersezioniTraccia.row(0) = intersezione[posCoordCurvilinea[1]].transpose();
-                // coordinateIntersezioniTraccia.row(1) = intersezione[posCoordCurvilinea[2]].transpose();
                 coordinateIntersezioniTraccia.row(0) = intersezione[0].transpose();
                 coordinateIntersezioniTraccia.row(1) = intersezione[1].transpose();
 
@@ -514,7 +512,7 @@ bool calcoloIntersezioneRettaTracciaERettalati(Frattura &Fratt, Traccia &Trac, u
                 // cout << intersezione[1].transpose() << endl;
                 bool tracciaPassante1 = false;
                 bool tracciaPassante2 = false;
-                double lunghezzaTraccia = (intersezione[posCoordCurvilinea[2]].transpose() - intersezione[posCoordCurvilinea[1]].transpose()).squaredNorm();
+                double lunghezzaTraccia = (intersezione[1].transpose() - intersezione[0].transpose()).norm();
 
                 if(idFract[0] < idFract[1]){
                     Trac.coordinateIntersezioniTracce[make_pair(idFract[0], idFract[1])] = coordinateIntersezioniTraccia;
@@ -540,7 +538,7 @@ bool calcoloIntersezioneRettaTracciaERettalati(Frattura &Fratt, Traccia &Trac, u
                 coordinateIntersezioniTraccia.row(1) = intersezione[posCoordCurvilinea[2]].transpose();
                 bool tracciaPassante = false;
                 bool tracciaNonPassante = true;
-                double lunghezzaTraccia = (intersezione[posCoordCurvilinea[2]].transpose() - intersezione[posCoordCurvilinea[1]].transpose()).squaredNorm();
+                double lunghezzaTraccia = (intersezione[posCoordCurvilinea[2]].transpose() - intersezione[posCoordCurvilinea[1]].transpose()).norm();
 
                 if(idFract[0] < idFract[1]){
                     Trac.coordinateIntersezioniTracce[make_pair(idFract[0], idFract[1])] = coordinateIntersezioniTraccia;
@@ -566,7 +564,7 @@ bool calcoloIntersezioneRettaTracciaERettalati(Frattura &Fratt, Traccia &Trac, u
                 coordinateIntersezioniTraccia.row(1) = intersezione[posCoordCurvilinea[2]].transpose();
                 bool tracciaNonPassante1 = true;
                 bool tracciaNonPassante2 = true;
-                double lunghezzaTraccia = (intersezione[posCoordCurvilinea[2]].transpose() - intersezione[posCoordCurvilinea[1]].transpose()).squaredNorm();
+                double lunghezzaTraccia = (intersezione[posCoordCurvilinea[2]].transpose() - intersezione[posCoordCurvilinea[1]].transpose()).norm();
 
                 if(idFract[1] < idFract[2]){
                     Trac.coordinateIntersezioniTracce[make_pair(idFract[1], idFract[2])] = coordinateIntersezioniTraccia;
@@ -713,7 +711,7 @@ bool stampaDatiSuiFileDiOutput(const string &percorsoFileOutputPuntiDiIntersezio
             // stampo sul secondo file di output lunghezza tracce la prima intestazione
             fileLunghezzaTracce << "# FractureId; NumTraces" << endl; // prima riga del secondo file di output
 
-            // cout << idFrattura << "; " << numeroTraccePerFrattura << endl; // cout di verifica da togliere
+            // cout << idFrattura << "; " << numeroTraccePerFrattura << endl;
 
             // stampo sul file l'id della frattura e il relativo numero di tracce
             fileLunghezzaTracce << idFrattura << "; " << numeroTraccePerFrattura << endl;
@@ -723,8 +721,8 @@ bool stampaDatiSuiFileDiOutput(const string &percorsoFileOutputPuntiDiIntersezio
             // for in cui vado a verificare per ogni singola frattura quali tracce sono passanti e quali tracce sono non passanti
             for(unsigned int i = 0; i < numeroTraccePerFrattura; i++){
 
-                // cout << "id Traccia: " << idTraccia[i] << endl; // cout di verifica da togliere
-                // cout << "passante o no: " << boolalpha << passanteONonPassante1[idTraccia[i]] << " passante o no: " << boolalpha << passanteONonPassante2[idTraccia[i]] << endl; // cout di verifica da togliere
+                // cout << "id Traccia: " << idTraccia[i] << endl;
+                // cout << "passante o no: " << boolalpha << passanteONonPassante1[idTraccia[i]] << " passante o no: " << boolalpha << passanteONonPassante2[idTraccia[i]] << endl;
 
                 // in questo if ed else if lavoro sulla colonna dell'id frattura 1 (if) e sulla colonna dell'id frattura 2 (else if)
                 // e verifico se idFract1 (if) e se idFract2 (else if) sulla riga idTraccia[i] (id traccia) è passante se è passante salvo i dati

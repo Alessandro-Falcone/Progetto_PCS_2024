@@ -5,13 +5,13 @@
 #include "srcUt/DFN.hpp"
 #include "srcUt/Utils.hpp"
 #include "srcParaview/Paraview.hpp"
-#include "srcParte2/PolygonalMesh.hpp"
-#include "srcParte2/Utils2poligoni.hpp"
+// #include "srcParte2/PolygonalMesh.hpp"
+// #include "srcParte2/Utils2poligoni.hpp"
 
 using namespace std;
 using namespace Eigen;
 using namespace DFNLibrary;
-using namespace PolygonalLibrary;
+// using namespace PolygonalLibrary;
 
 int main(){
 
@@ -39,7 +39,6 @@ int main(){
         return -1;
     }
 
-    cout << "intersezioni: " << numIntersezioniFratture << endl;
     if(!calcoloEqPianoEdEqRetteLati(Fratt)){
         cerr << "Errore: impossibile calcolare l'equazione del piano o l'equazione delle rette dei lati" << endl;
         return -1;
@@ -55,8 +54,6 @@ int main(){
         return -1;
     }
 
-    // cout << endl;
-    cout << "numero delle tracce: " << numeroTracceTotali << endl;
     if(!stampaDatiSuiFileDiOutput(percorsoFileOutputPuntiDiIntersezione, percorsoFileOutputLunghezzaTracce, Fratt, Trac, numeroTracceTotali)){
         cerr << "Errore: impossibile stampare sui file di output" << endl;
         return 1;
@@ -72,15 +69,13 @@ int main(){
         return 2;
     }
 
-    // seconda parte progetto
-    PolygonalMesh mesh;
+    // // seconda parte progetto
+    // PolygonalMesh mesh;
 
-    if(!letturaMesh(Fratt, Trac, mesh)){
-        cerr << "Errore: impossibile leggere la mesh" << endl;
-        return 1;
-    }else{
-        cout << "tutto ok" << endl;
-    }
+    // if(!letturaMesh(Fratt, Trac, mesh)){
+    //     cerr << "Errore: impossibile leggere la mesh" << endl;
+    //     return 1;
+    // }
 
     return 0;
 }

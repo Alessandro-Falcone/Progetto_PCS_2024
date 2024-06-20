@@ -1,0 +1,109 @@
+@startuml
+' Ogni codice UML inizia e termina con staruml - enduml
+
+
+title Fratture e Tracce
+
+' Create package with folder style
+package DFNLibrary <<Folder>>
+{
+
+class Frattura{
+' Visibility NameVaribale : Type
++  coordinateFratture = vector<MatrixXd>
++  idFrattureCheSiIntersecano = map<unsigned int, pair<unsigned int, unsigned int>> 
++  coeffabcPiano = map<unsigned int, Vector3d>
++  coeffdPiano = map<unsigned int, double>
++  coeffDirettoriRettaLati = map<unsigned int, MatrixXd>
+
+
+
+.. Non member function ..
+bool letturaDatiFileFR(const string &percorsoFileFR, 
+\t \t \t     Frattura &Fratt, unsigned int &numFract);
+
+
+bool calcoloBaricentriEDistBaricentroVertici(Frattura &Fratt, 
+\t \t \t unsigned int &numFract, unsigned int &numIntersezioniFratture);
+
+bool calcoloEqPianoEdEqRetteLati(Frattura &Fratt);
+
+
+
+
+
+.. TEST ..
+
+TEST(TestFunzioneLetturaDatiFileFR, NonEsisteIlFile)
+TEST(TestFunzioneLetturaDatiFileFR, FileApertoCorrettamente)
+TEST(TestFunzioneCalcoloEqPianoEdEqRetteLati, TestEqPianiERette)
+
+
+
+}
+
+
+class Traccia{
+
++  coordinatePuntoP = map<pair<unsigned int, unsigned int>, Vector3d>
++  coeffDirettoriRettaTraccia = map<pair<unsigned int, unsigned int>, Vector3d>
++  coordinateIntersezioniTracce = map<pair<unsigned int, unsigned int>, MatrixXd>
++  traccePassantiONonPassanti1 = map<pair<unsigned int, unsigned int>, bool>
++  traccePassantiONonPassanti2 = map<pair<unsigned int, unsigned int>, bool>
++  lunghezzaTracce = map<pair<unsigned int, unsigned int>, double>
+
+
+
+.. Non member function ..
+
+
+bool calcoloIntersezionePiani(Frattura &Fratt, Traccia &Trac,
+ \t \t \t   unsigned int &numIntersezioniFratture);
+
+bool calcoloIntersezioneRettaTracciaERettalati(Frattura &Fratt, Traccia &Trac, 
+\t \t \t   unsigned int &numeroTracceTotali);
+
+bool stampaDatiSuiFileDiOutput(const string &percorsoFileOutputPuntiDiIntersezione, 
+\t \t \t const string &percorsoFileOutputLunghezzaTracce, Frattura &Fratt, Traccia &Trac,
+\t \t \t  unsigned int &numeroTracceTotali);
+
+
+
+.. TEST ..
+
+TEST(TestFunzioneCalcoloIntersezionePiani, TestCoordinatePuntoP)
+TEST(TestFunzioneCalcoloIntersezionePiani, TestCoefficientiDirettoriRettaTraccia)
+TEST(TestFunzioneCalcoloIntersezionePiani, CoordinatePuntiTraccia)
+TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, lunghezzaTracce)
+TEST(TestFunzioneCalcoloIntersezioneRettaTracciaERettalati, lunghezzaTracceNulla)
+TEST(TestFunzioneStampaDatiSuiFileDiOutput, AperturaCorrettaFileDiOutput)
+
+
+
+}
+
+' Modeling relationship: https://blog.visual-paradigm.com/what-are-the-six-types-of-relationships-in-uml-class-diagrams/#:~:text=There%20are%20six%20main%20types,aggregation%20%2C%20association%2C%20and%20dependency%20.
+
+' Left, right, up, down to try to orient classes in the space based on their relationship
+
+' Aggregazione
+' coordinateFratture  o-left-  IntersezioniFratture 
+' IntersezioniFratture o-down-  PianoContenenteFratture 
+' PianoContenenteFratture  o-right-  Tracce 
+
+}
+
+
+package Gedim <<Frame>>
+{
+
+}
+
+
+' PlotPolygon relies upon Gedim
+DFNLibrary--right--> Gedim
+
+' Add notes and link it with an object thourgh the sumbol ..
+note "This is an external package" as GedimNote
+GedimNote .. Gedim
+@enduml
